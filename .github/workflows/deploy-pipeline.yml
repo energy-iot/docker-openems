@@ -64,6 +64,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker image
+        working-directory: ./openems-backend
         env:
           IMAGE_NAME: ${{ env.IMAGE_NAME_VALUE }}
           IMAGE_TAG: ${{ env.IMAGE_TAG_VALUE }}
