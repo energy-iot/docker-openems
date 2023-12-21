@@ -50,6 +50,8 @@ jobs:
         run: |
           aws ecr create-repository --repository-name ${{ env.IMAGE_NAME }} 
 
+# Build Docker Image
+
   build_and_push_image:
     name: Build and push Docker image to ECR
     needs:
