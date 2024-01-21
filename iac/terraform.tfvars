@@ -23,4 +23,4 @@ image_tag    = "latest"
 
 
 # secrets manager variables
-secrets_manager_secret_name = "rentzone-app-dev-secret"
+secrets_manager_secret_name = "openems-demo-secret"

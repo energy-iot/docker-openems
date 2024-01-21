@@ -23,8 +23,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 2048
-  memory                   = 4096
+  cpu                      = 4096
+  memory                   = 12288
 
   runtime_platform {
     operating_system_family = "LINUX"
@@ -57,14 +57,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     {
       name      = "${var.project_name}-${var.environment}-container"
       image     = "${local.secrets.ecr_registry}/${var.image_name_openems_backend}:${var.image_tag}"
-      essential = true
-
-      portMappings = [
-        {
-          containerPort = 80
-          hostPort      = 80
-        }
-      ]
+      essential = false
 
       logConfiguration = {
         logDriver = "awslogs",
@@ -80,13 +73,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       image     = "${local.secrets.ecr_registry}/${var.image_name_openems_db}:${var.image_tag}"
       essential = false
 
-      portMappings = [
-        {
-          containerPort = 80
-          hostPort      = 80
-        }
-      ]
-
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -100,13 +86,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       name      = "${var.project_name}-${var.environment}-container"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo}:${var.image_tag}"
       essential = false
-
-      portMappings = [
-        {
-          containerPort = 80
-          hostPort      = 80
-        }
-      ]
 
       logConfiguration = {
         logDriver = "awslogs",
@@ -122,14 +101,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo_db}:${var.image_tag}"
       essential = false
 
-      portMappings = [
-        {
-          containerPort = 80
-          hostPort      = 80
-        }
-      ]
-
-      logConfiguration = {
+     logConfiguration = {
         logDriver = "awslogs",
         options = {
           "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
@@ -149,7 +121,7 @@ resource "aws_ecs_service" "ecs_service" {
   cluster                            = aws_ecs_cluster.ecs_cluster.id
   task_definition                    = aws_ecs_task_definition.ecs_task_definition.arn
   platform_version                   = "LATEST"
-  desired_count                      = 2
+  desired_count                      = 1
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
 
@@ -163,3 +135,4 @@ resource "aws_ecs_service" "ecs_service" {
     security_groups  = [aws_security_group.openems_security_group.id]
     assign_public_ip = true
   }
+}

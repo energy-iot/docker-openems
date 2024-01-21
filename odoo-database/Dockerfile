@@ -3,7 +3,7 @@ FROM postgres:15
 
 # Set the environment variables
 ENV POSTGRES_PASSWORD=myodoo
-ENV POSTGRES_USER=odoo
+ENV POSTGRES_DB=odoodb 
 
 # Expose the default port for PostgreSQL
-EXPOSE 5432
+EXPOSE 5433

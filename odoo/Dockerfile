@@ -2,7 +2,6 @@
 FROM odoo:16.0
 
 # Set environment variables
-ENV USER=odoo
 ENV PASSWORD=myodoo
 
 # Expose port 8069 for Odoo
