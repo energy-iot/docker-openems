@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+  openems-ui:
+    build: ./openems-ui
+    image: openems-ui:latest
+  openems-backend:
+    build: ./openems-backend
+    image: openems-backend:latest
+  openems-database:
+    build: ./openems.database
+    image: openems-db:latest
+  odoo:
+    build: ./odoo
+    image: openems-db:latest
+  odoo-database:
+    build: ./odoo-database
+    image: openems-db:latest
+   

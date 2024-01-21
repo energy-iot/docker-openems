@@ -49,7 +49,11 @@ jobs:
         if: env.repo_name != env.IMAGE_NAME
         run: |
           aws ecr create-repository --repository-name ${{ env.IMAGE_NAME }} 
-
+          aws ecr put-registry-scanning-configuration \
+              --scan-type ENHANCED \
+              --rules '["scanFrequency" : "SCAN_ON_PUSH"]' \
+              --region ${{ env.AWS_REGION }}
+      
 # Build Docker Image
 
   build_and_push_image:
@@ -65,24 +69,19 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: install Trivy
+      - run: |
+           sudo apt-get install wget apt-transport-https gnupg lsb-release -y
+           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+           echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+           sudo apt-get update
+           sudo apt-get install trivy -y
+           trivy fs . 
+
       - name: Build Docker image
-        working-directory: ./openems-backend
-        env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME_VALUE }}
-          IMAGE_TAG: ${{ env.IMAGE_TAG_VALUE }}
         run: |
-          docker buildx build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
-
-      - name: Retag Docker image
-        env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME_VALUE }}
-        run: |
-          docker tag ${{ env.IMAGE_NAME }} ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Push Docker Image to Amazon ECR
-        env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME_VALUE }}
-        run: |
-          docker push ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}
-
+          docker-compose build   
+         
+      - name: Retag Docker image and Push Docker Image to Amazon ECR
+        run: ./push-to-ecr.sh
 
