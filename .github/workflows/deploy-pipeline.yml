@@ -9,8 +9,13 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: us-east-1
-  IMAGE_NAME_VALUE: openems
+  IMAGE_NAME_VALUE_1: openems-ui
+  IMAGE_NAME_VALUE_2: openems-backend
+  IMAGE_NAME_VALUE_3: openems-db
+  IMAGE_NAME_VALUE_4: odoo
+  IMAGE_NAME_VALUE_5: odoo-db
   IMAGE_TAG_VALUE: latest
+  TERRAFORM_ACTION: destroy
 
 jobs:
   # Configure AWS credentials 
@@ -24,43 +29,88 @@ jobs:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
-  # Create ECR repository
-  create_ecr_repository:
-    name: Create ECR repository
-    needs: 
-      - configure_aws_credentials
+  
+   # Build AWS infrastructure
+  deploy_aws_infrastructure:
+    name: Build AWS infrastructure
+    needs: configure_aws_credentials
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Check if ECR repository exists
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.1.7
+
+      - name: Run Terraform initialize
+        working-directory: ./iac
+        run: terraform init
+
+      - name: Run Terraform apply/destroy
+        working-directory: ./iac
+        run: terraform ${{ env.TERRAFORM_ACTION }} -auto-approve        
+
+  # Create ECR repository
+  create_ecr_repository:
+    name: Create ECR repository
+    needs: 
+      - deploy_aws_infrastructure     
+      - configure_aws_credentials
+    if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy'  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check if ECR repositories exist
         env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME_VALUE }}
+          # List your repository names here  
+          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }}' 
         run: |
-          result=$(aws ecr describe-repositories --repository-names "${{ env.IMAGE_NAME }}" | jq -r '.repositories[0].repositoryName')
-          echo "repo_name=$result" >> $GITHUB_ENV
+          IFS=',' read -ra REPOS <<< "$REPO_NAMES"
+          for repo in "${REPOS[@]}"; do
+            echo "Checking repository: $repo"
+            result=$(aws ecr describe-repositories --repository-names "$repo" 2>/dev/null | jq -r '.repositories[0]?.repositoryName // empty')
+            if [[ -z "$result" ]]; then
+              echo "Repository $repo does not exist."
+            else
+              echo "Repository $repo exists."
+              echo "repo_name_$repo=$result" >> $GITHUB_ENV
+            fi
+          done
         continue-on-error: true
 
-      - name: Create ECR repository
+      - name: Create ECR repositories
         env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME_VALUE }}
-        if: env.repo_name != env.IMAGE_NAME
+          # List your repository names here  
+          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }}' 
         run: |
-          aws ecr create-repository --repository-name ${{ env.IMAGE_NAME }} 
-          aws ecr put-registry-scanning-configuration \
-              --scan-type ENHANCED \
-              --rules '["scanFrequency" : "SCAN_ON_PUSH"]' \
-              --region ${{ env.AWS_REGION }}
+          IFS=',' read -ra REPOS <<< "$REPO_NAMES"
+          for repo in "${REPOS[@]}"; do
+            echo "Creating repository: $repo"
+            if ! aws ecr describe-repositories --repository-names "$repo" 2>/dev/null; then
+              aws ecr create-repository --repository-name "$repo"
+              echo "Repository $repo created."
+            else
+              echo "Repository $repo already exists."
+            fi
+          done
+        #  aws ecr put-registry-scanning-configuration \
+        #     --scan-type ENHANCED \
+        #      --rules '["scanFrequency" : "SCAN_ON_PUSH"]' \
+        #      --region ${{ env.AWS_REGION }}
       
-# Build Docker Image
+    # Build Docker Image
 
   build_and_push_image:
-    name: Build and push Docker image to ECR
-    needs:
+    name: Build, Scan and push Docker image to ECR
+    needs:  
       - configure_aws_credentials
+      - deploy_aws_infrastructure
       - create_ecr_repository
+    if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy'  
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -80,8 +130,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker-compose build   
+          docker-compose build      
          
       - name: Retag Docker image and Push Docker Image to Amazon ECR
         run: ./push-to-ecr.sh
+
+
 
