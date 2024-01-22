@@ -15,7 +15,7 @@ env:
   IMAGE_NAME_VALUE_4: odoo
   IMAGE_NAME_VALUE_5: odoo-db
   IMAGE_TAG_VALUE: latest
-  TERRAFORM_ACTION: apply
+  TERRAFORM_ACTION: destroy
 
 jobs:
   # Configure AWS credentials 
