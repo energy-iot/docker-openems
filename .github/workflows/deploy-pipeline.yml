@@ -104,7 +104,7 @@ jobs:
       
     # Build Docker Image
 
-  login_amazon_ecr:
+  build_scan_push:
     name: Build, Scan and push Docker image to ECR
     needs:  
       - configure_aws_credentials
@@ -118,16 +118,6 @@ jobs:
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-  
-  build_scan_image:
-    name: Build and Scan Image
-    needs:  
-      - configure_aws_credentials
-      - deploy_aws_infrastructure
-      - create_ecr_repository
-    if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy' 
-    runs-on: ubuntu-latest
-    steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -135,6 +125,21 @@ jobs:
         run: |
           docker-compose build 
 
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/library/odoo-db:latest, docker.io/library/odoo:latest, docker.io/library/openems-db:latest, docker.io/library/openems-ui:latest, docker.io/library/openems-backend:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+      
+      - name: Retag Docker image and Push Docker Image to Amazon ECR
+        run: ./push-to-ecr.sh
+  
 
      
 
