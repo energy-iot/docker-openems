@@ -128,7 +128,35 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/library/odoo-db:latest, docker.io/library/odoo:latest, docker.io/library/openems-db:latest, docker.io/library/openems-ui:latest, docker.io/library/openems-backend:latest'
+          image-ref: 'docker.io/library/odoo-db:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/library/odoo:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/library/openems-db:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/library/openems-ui:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/library/openems-backend:latest'
           format: 'sarif'
           output: 'trivy-results.sarif'
 
@@ -144,4 +172,4 @@ jobs:
      
 
 
-
+, , , 
