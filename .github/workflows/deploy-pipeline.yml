@@ -104,6 +104,22 @@ jobs:
       
     # Build Docker Image
 
+  build_and_push_image:
+    name: Build, Scan and push Docker image to ECR
+    needs:  
+      - configure_aws_credentials
+      - deploy_aws_infrastructure
+      - create_ecr_repository
+    if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy'  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+     
 
 
 
