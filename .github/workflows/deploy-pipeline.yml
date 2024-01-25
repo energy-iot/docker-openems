@@ -160,6 +160,9 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
       
+      - name: Grant execute permission to the script
+        run: chmod +x ./push-to-ecr.sh
+
       - name: Retag Docker image and Push Docker Image to Amazon ECR
         run: ./push-to-ecr.sh
   
