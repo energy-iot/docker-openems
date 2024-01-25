@@ -168,8 +168,3 @@ jobs:
       - name: Retag Docker image and Push Docker Image to Amazon ECR
         run: ./push-to-ecr.sh
   
-
-     
-
-
-, , , 
