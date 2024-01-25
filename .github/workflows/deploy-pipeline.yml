@@ -82,4 +82,28 @@ jobs:
           done
         continue-on-error: true
 
+      - name: Create ECR repositories
+        env:
+          # List your repository names here  
+          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }}' 
+        run: |
+          IFS=',' read -ra REPOS <<< "$REPO_NAMES"
+          for repo in "${REPOS[@]}"; do
+            echo "Creating repository: $repo"
+            if ! aws ecr describe-repositories --repository-names "$repo" 2>/dev/null; then
+              aws ecr create-repository --repository-name "$repo"
+              echo "Repository $repo created."
+            else
+              echo "Repository $repo already exists."
+            fi
+          done
+        #  aws ecr put-registry-scanning-configuration \
+        #     --scan-type ENHANCED \
+        #      --rules '["scanFrequency" : "SCAN_ON_PUSH"]' \
+        #      --region ${{ env.AWS_REGION }}
       
+    # Build Docker Image
+
+
+
+
