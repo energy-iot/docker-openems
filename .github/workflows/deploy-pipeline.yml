@@ -104,7 +104,7 @@ jobs:
       
     # Build Docker Image
 
-  build_and_push_image:
+  login_amazon_ecr:
     name: Build, Scan and push Docker image to ECR
     needs:  
       - configure_aws_credentials
@@ -118,7 +118,17 @@ jobs:
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-
+  
+  build_and_push_image:
+    name: Build, Scan and push Docker image to ECR
+    needs:  
+      - configure_aws_credentials
+      - deploy_aws_infrastructure
+      - create_ecr_repository
+      - login_amazon_ecr
+    if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy'  
+    runs-on: ubuntu-latest
+    steps:
       - name: install Trivy
       - run: |
            sudo apt-get install wget apt-transport-https gnupg lsb-release -y
@@ -132,7 +142,8 @@ jobs:
         run: |
           docker-compose build      
          
-      
+      - name: Retag Docker image and Push Docker Image to Amazon ECR
+        run: ./push-to-ecr.sh
 
 
 
