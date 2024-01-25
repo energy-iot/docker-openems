@@ -138,12 +138,7 @@ jobs:
            sudo apt-get install trivy -y
            trivy fs . 
 
-      - name: Build Docker image
-        run: |
-          docker-compose build      
-         
-      - name: Retag Docker image and Push Docker Image to Amazon ECR
-        run: ./push-to-ecr.sh
+     
 
 
 
