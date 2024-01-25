@@ -119,24 +119,22 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
   
-  build_and_push_image:
-    name: Build, Scan and push Docker image to ECR
+  build_scan_image:
+    name: Build and Scan Image
     needs:  
       - configure_aws_credentials
       - deploy_aws_infrastructure
       - create_ecr_repository
-      - login_amazon_ecr
-    if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy'  
+    if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy' 
     runs-on: ubuntu-latest
     steps:
-      - name: install Trivy
-      - run: |
-           sudo apt-get install wget apt-transport-https gnupg lsb-release -y
-           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-           echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-           sudo apt-get update
-           sudo apt-get install trivy -y
-           trivy fs . 
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build an image from Docker Compose
+        run: |
+          docker-compose build 
+
 
      
 
