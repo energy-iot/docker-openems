@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   # create container definition
   container_definitions = jsonencode([
     {
-      name      = "${var.project_name}-${var.environment}-container"
+      name      = "${var.project_name}-${var.environment}-container_1"
       image     = "${local.secrets.ecr_registry}/${var.image_name_openems_ui}:${var.image_tag}"
       essential = true
 
@@ -55,7 +55,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       }
     },
     {
-      name      = "${var.project_name}-${var.environment}-container"
+      name      = "${var.project_name}-${var.environment}-container_2"
       image     = "${local.secrets.ecr_registry}/${var.image_name_openems_backend}:${var.image_tag}"
       essential = false
 
@@ -69,7 +69,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       }
     },
     {
-      name      = "${var.project_name}-${var.environment}-container"
+      name      = "${var.project_name}-${var.environment}-container_3"
       image     = "${local.secrets.ecr_registry}/${var.image_name_openems_db}:${var.image_tag}"
       essential = false
 
@@ -83,7 +83,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       }
     },
     {
-      name      = "${var.project_name}-${var.environment}-container"
+      name      = "${var.project_name}-${var.environment}-container_4"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo}:${var.image_tag}"
       essential = false
 
@@ -97,7 +97,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       }
     },
     {
-      name      = "${var.project_name}-${var.environment}-container"
+      name      = "${var.project_name}-${var.environment}-container_5"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo_db}:${var.image_tag}"
       essential = false
 
