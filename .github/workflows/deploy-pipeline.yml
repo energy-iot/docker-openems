@@ -15,7 +15,7 @@ env:
   IMAGE_NAME_VALUE_4: odoo
   IMAGE_NAME_VALUE_5: odoo-db 
   TERRAFORM_ACTION: destroy
-  ECS_TD: openems-demo-td.json
+  ECS_TD: .github/workflows/openems-demo-td.json
   ECS_SERVICE: openems-demo-service
   ECS_CLUSTER: openems-demo-cluster
 
@@ -192,6 +192,10 @@ jobs:
           task-definition: ${{ env.ECS_TD }}
           container-name: openems-demo-container-ui
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_1 }}:latest
+          environment-variables: |
+            Project=openems
+            ENVIRONMENT=demo
+            Automation=terraform
 
       - name: Modify Amazon ECS task definition with second container
         id: render-backend-container
