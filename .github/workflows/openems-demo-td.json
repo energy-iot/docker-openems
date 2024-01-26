@@ -1,5 +1,5 @@
 {
-    "family": "openems-demo-td",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-demo-td",
     "containerDefinitions": [
         {
             "name": "openems-demo-container-ui",
@@ -98,8 +98,39 @@
             }
         }
     ],
+    "family": "openems-demo-td",
     "executionRoleArn": "arn:aws:iam::470298448112:role/openems-demo-ecs-task-execution-role",
     "networkMode": "awsvpc",
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
     "requiresCompatibilities": [
         "FARGATE"
     ],
@@ -109,6 +140,8 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
+    "registeredAt": "2024-01-26T16:31:07.065Z",
+    "registeredBy": "arn:aws:iam::470298448112:user/axm-bello",
     "tags": [
         {
             "key": "Project",
