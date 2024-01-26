@@ -132,35 +132,35 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/library/env.IMAGE_NAME_VALUE_1:latest'
+          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_1 }}:latest'
           format: 'sarif'
           output: 'trivy-results.sarif'
       
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/library/env.IMAGE_NAME_VALUE_2:latest'
+          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_2 }}:latest'
           format: 'sarif'
           output: 'trivy-results.sarif'
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/library/env.IMAGE_NAME_VALUE_3:latest'
+          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_3 }}:latest'
           format: 'sarif'
           output: 'trivy-results.sarif'
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/library/env.IMAGE_NAME_VALUE_4:latest'
+          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_4 }}:latest'
           format: 'sarif'
           output: 'trivy-results.sarif'
       
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/library/env.IMAGE_NAME_VALUE_5:latest'
+          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_5 }}:latest'
           format: 'sarif'
           output: 'trivy-results.sarif'
       
@@ -191,7 +191,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TD }}
           container-name: openems-demo-container-ui
-          image: ${{ secrets.ECR_REGISTRY }}/env.IMAGE_NAME_VALUE_1:latest
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_1 }}:latest
 
       - name: Modify Amazon ECS task definition with second container
         id: render-backend-container
@@ -199,7 +199,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-ui-container.outputs.task-definition }}
           container-name: openems-demo-container-backend
-          image: ${{ secrets.ECR_REGISTRY }}/env.IMAGE_NAME_VALUE_2:latest
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_2 }}:latest
       
       - name: Modify Amazon ECS task definition with second container
         id: render-backend-db-container
@@ -207,7 +207,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
           container-name: openems-demo-container-backend-db
-          image: ${{ secrets.ECR_REGISTRY }}/env.IMAGE_NAME_VALUE_3:latest
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_3 }}:latest
 
       - name: Modify Amazon ECS task definition with second container
         id: render-odoo-container
@@ -215,7 +215,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-backend-db-container.outputs.task-definition }}
           container-name: openems-demo-container-odoo
-          image: ${{ secrets.ECR_REGISTRY }}/env.IMAGE_NAME_VALUE_4:latest
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest
 
       - name: Modify Amazon ECS task definition with second container
         id: render-odoo-db-container
@@ -223,7 +223,7 @@ jobs:
         with:
           task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
           container-name: openems-demo-container-odoo-db
-          image: ${{ secrets.ECR_REGISTRY }}/env.IMAGE_NAME_VALUE_5:latest    
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_5 }}:latest    
 
       - name: Deploy to Amazon ECS service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
