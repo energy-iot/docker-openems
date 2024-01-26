@@ -197,7 +197,7 @@ jobs:
             ENVIRONMENT=demo
             Automation=terraform
 
-      - name: Modify Amazon ECS task definition with second container
+      - name: Modify Amazon ECS task definition with first container
         id: render-backend-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
@@ -213,7 +213,7 @@ jobs:
           container-name: openems-demo-container-backend-db
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_3 }}:latest
 
-      - name: Modify Amazon ECS task definition with second container
+      - name: Modify Amazon ECS task definition with third container
         id: render-odoo-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
@@ -221,7 +221,7 @@ jobs:
           container-name: openems-demo-container-odoo
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest
 
-      - name: Modify Amazon ECS task definition with second container
+      - name: Modify Amazon ECS task definition with forth container
         id: render-odoo-db-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
