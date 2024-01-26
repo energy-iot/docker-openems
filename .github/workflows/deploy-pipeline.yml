@@ -15,7 +15,7 @@ env:
   IMAGE_NAME_VALUE_4: odoo
   IMAGE_NAME_VALUE_5: odoo-db 
   TERRAFORM_ACTION: destroy
-  ECS_TD: ./.github/workflows/openems-demo-td.json
+  ECS_TD: .github/workflows/openems-demo-td.json
   ECS_SERVICE: openems-demo-service
   ECS_CLUSTER: openems-demo-cluster
 
