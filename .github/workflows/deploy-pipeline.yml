@@ -193,10 +193,6 @@ jobs:
           task-definition: ${{ env.ECS_TD }}
           container-name: openems-demo-container-ui
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_1 }}:latest
-          environment-variables: |
-            Project=openems
-            ENVIRONMENT=demo
-            Automation=terraform
 
       - name: Modify Amazon ECS task definition with first container
         id: render-backend-container
