@@ -14,7 +14,7 @@ env:
   IMAGE_NAME_VALUE_3: openems-db
   IMAGE_NAME_VALUE_4: odoo
   IMAGE_NAME_VALUE_5: odoo-db 
-  TERRAFORM_ACTION: destroy
+  TERRAFORM_ACTION: apply
   ECS_TD: .github/workflows/openems-demo-td.json
   ECS_SERVICE: openems-demo-service
   ECS_CLUSTER: openems-demo-cluster
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
