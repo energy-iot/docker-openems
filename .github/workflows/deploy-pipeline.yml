@@ -122,8 +122,6 @@ jobs:
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-      - name: Checkout code
-        uses: actions/checkout@v3
 
       - name: Build an image from Docker Compose
         run: |
@@ -184,7 +182,10 @@ jobs:
        - build_scan_push
     if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy'  
     runs-on: ubuntu-latest
-    steps:   
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3   
+
       - name: Render Amazon ECS task definition for first container
         id: render-ui-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
