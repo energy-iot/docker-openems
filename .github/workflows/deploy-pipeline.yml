@@ -171,9 +171,10 @@ jobs:
         run: chmod +x ./push-to-ecr.sh
   
       - name: Retag Docker image and Push Docker Image to Amazon ECR
-        run: ./push-to-ecr.sh
-          with: 
+         env:
           ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          REGION: ${{ env.AWS_REGION }}
+        run: ./push-to-ecr.sh
   
   create_td_revision_restart_ecs:
     name: Create new task definition revision and Restart ECS
