@@ -34,7 +34,7 @@ This directory contains Terraform scripts for provisioning the necessary AWS inf
 Each folder contains Dockerfiles and related dependencies required to build the images for the respective microservices. Notably, the `Openems-backend` directory includes the `openems-backend.jar` file. For the latest version of this file, refer to the [OpenEMS GitHub releases page](https://github.com/OpenEMS/openems/releases/tag/2023.11.0).
 
 
-## Docker-compose yaml file - Docker Compose Services
+## `Docker-compose yaml file` - Docker Compose Services
 
 Below is a summary of the services defined in the Docker Compose file, outlining their roles within the project's architecture.
 
@@ -72,7 +72,7 @@ Below is a summary of the services defined in the Docker Compose file, outlining
 
 
 
-## Push-to-ecr.sh file
+## `Push-to-ecr.sh` file
 
 The script is used in the Github action workflow to rename the docker compose images and push to amazon ecr.The script performs the following steps:
 
