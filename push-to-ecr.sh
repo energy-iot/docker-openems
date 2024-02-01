@@ -1,5 +1,5 @@
 # Set AWS details
-ECR_URI="470298448112.dkr.ecr.us-east-1.amazonaws.com"
+ECR_URI="${ACCESS_KEY_ID}.dkr.ecr.us-east-1.amazonaws.com"
 
 
 # Assuming docker-compose.yml is in the same directory as the script
