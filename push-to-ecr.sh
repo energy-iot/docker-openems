@@ -1,17 +1,5 @@
-#!/bin/bash
-
-
-# Check if AWS details are set
-if [[ -z "$ACCESS_KEY_ID" || -z "$REGION" ]]; then
-  echo "ACCESS_KEY_ID and REGION environment variables must be set."
-  exit 1
-fi
-
-
-
-
 # Set AWS details
-ECR_URI="${ACCESS_KEY_ID}.dkr.ecr.${REGION}.amazonaws.com"
+ECR_URI="470298448112.dkr.ecr.us-east-1.amazonaws.com"
 
 
 # Assuming docker-compose.yml is in the same directory as the script
