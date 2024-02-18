@@ -90,7 +90,7 @@ jobs:
       - name: Create ECR repositories
         env:
           # List your repository names here  
-          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }}, ${{ env.IMAGE_NAME_VALUE_6 }}' 
+          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }},${{ env.IMAGE_NAME_VALUE_6 }}' 
         run: |
           IFS=',' read -ra REPOS <<< "$REPO_NAMES"
           for repo in "${REPOS[@]}"; do
