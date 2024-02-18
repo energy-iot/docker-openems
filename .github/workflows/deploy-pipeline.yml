@@ -13,7 +13,8 @@ env:
   IMAGE_NAME_VALUE_2: openems-backend
   IMAGE_NAME_VALUE_3: openems-db
   IMAGE_NAME_VALUE_4: odoo
-  IMAGE_NAME_VALUE_5: odoo-db 
+  IMAGE_NAME_VALUE_5: odoo-db
+  IMAGE_NAME_VALUE_6: openems-edge
   TERRAFORM_ACTION: destroy
   ECS_TD: .github/workflows/openems-demo-td.json
   ECS_SERVICE: openems-demo-service
@@ -71,7 +72,7 @@ jobs:
       - name: Check if ECR repositories exist
         env:
           # List your repository names here  
-          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }}' 
+          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }},${{ env.IMAGE_NAME_VALUE_6 }}' 
         run: |
           IFS=',' read -ra REPOS <<< "$REPO_NAMES"
           for repo in "${REPOS[@]}"; do
@@ -89,7 +90,7 @@ jobs:
       - name: Create ECR repositories
         env:
           # List your repository names here  
-          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }}' 
+          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }}, ${{ env.IMAGE_NAME_VALUE_6 }}' 
         run: |
           IFS=',' read -ra REPOS <<< "$REPO_NAMES"
           for repo in "${REPOS[@]}"; do
@@ -161,6 +162,12 @@ jobs:
           image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_5 }}:latest'
           format: 'sarif'
           output: 'trivy-results.sarif'
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_6 }}:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
       
       # - name: Upload Trivy scan results to GitHub Security tab
       #   uses: github/codeql-action/upload-sarif@v2
@@ -224,7 +231,15 @@ jobs:
         with:
           task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
           container-name: openems-demo-container-odoo-db
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_5 }}:latest    
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_5 }}:latest  
+      
+      - name: Modify Amazon ECS task definition with fifth container
+        id: render-edge-container
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-odoo-db-container.outputs.task-definition }}
+          container-name: openems-demo-container-edge
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_6 }}:latest 
 
       - name: Deploy to Amazon ECS service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

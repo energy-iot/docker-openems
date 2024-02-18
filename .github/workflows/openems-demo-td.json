@@ -96,6 +96,24 @@
                     "awslogs-stream-prefix": "ecs"
                 }
             }
+        },
+        {
+            "name": "openems-demo-container-edge",
+            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo-db:latest",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": false,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/openems-demo-td",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
         }
     ],
     "family": "openems-demo-td",

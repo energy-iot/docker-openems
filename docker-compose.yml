@@ -10,6 +10,11 @@ services:
       context: ./openems-backend
     image: openems-backend:latest
 
+  openems-edge:
+    build: 
+      context: ./openems-edge
+    image: openems-edge:latest
+
   openems-database:
     build: 
       context: ./openems-database

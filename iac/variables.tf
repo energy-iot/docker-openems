@@ -63,6 +63,11 @@ variable "image_name_odoo_db" {
   type        = string
 }
 
+variable "image_name_openems_edge" {
+  description = "the docker image name"
+  type        = string
+}
+
 variable "image_tag" {
   description = "the docker image tag"
   type        = string
