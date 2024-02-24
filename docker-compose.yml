@@ -30,13 +30,18 @@ services:
       - "8069:8069"
     depends_on:
       - odoo-database
+    environment:
+      HOST: odoo-database  # Use the service name as the host
+      PORT: "5433"  # Tell Odoo to connect to PostgreSQL on port 5433
+      USER: odoo  # Default user, adjust if you use a different one
+      PASSWORD: myodoo
 
   odoo-database:
     build: 
       context: ./odoo-database
     image: odoo-db:latest
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_PASSWORD: myodoo
       POSTGRES_DB: odoodb
