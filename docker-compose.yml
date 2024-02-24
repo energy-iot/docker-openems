@@ -4,16 +4,22 @@ services:
     build: 
       context: ./openems-ui
     image: openems-ui:latest
+    networks:
+      - openems-network
 
   openems-backend:
     build: 
       context: ./openems-backend
     image: openems-backend:latest
+    networks:
+      - openems-network
 
   openems-edge:
     build: 
       context: ./openems-edge
     image: openems-edge:latest
+    networks:
+      - openems-network
 
   openems-database:
     build: 
@@ -21,6 +27,8 @@ services:
     image: openems-db:latest
     ports: 
       - "5432:5432"
+    networks:
+      - openems-network
 
   odoo:
     build: 
@@ -31,10 +39,12 @@ services:
     depends_on:
       - odoo-database
     environment:
-      HOST: odoo-database  # Use the service name as the host
-      PORT: "5433"  # Tell Odoo to connect to PostgreSQL on port 5433
-      USER: odoo  # Default user, adjust if you use a different one
+      HOST: odoo-database
+      PORT: "5433"
+      USER: odoo
       PASSWORD: myodoo
+    networks:
+      - odoo-network
 
   odoo-database:
     build: 
@@ -47,6 +57,14 @@ services:
       POSTGRES_DB: odoodb
     volumes:
       - odoo-db-data:/var/lib/postgresql/data
+    networks:
+      - odoo-network
+
+networks:
+  openems-network:
+    driver: bridge
+  odoo-network:
+    driver: bridge
 
 volumes:
   odoo-db-data:
