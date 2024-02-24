@@ -11,6 +11,14 @@ services:
     build: 
       context: ./openems-backend
     image: openems-backend:latest
+    environment:
+      DB_HOST: openems-database  # Assumes the PostgreSQL service is named openems-database
+      DB_PORT: "5432"
+      DB_NAME: openemsdb
+      DB_USER: postgres
+      DB_PASSWORD: myopenemspassword
+    depends_on:
+      - openems-database
     networks:
       - openems-network
 
