@@ -6,4 +6,4 @@ ENV POSTGRES_PASSWORD=myodoo
 ENV POSTGRES_DB=odoodb 
 
 # Expose the default port for PostgreSQL
-EXPOSE 5433
+EXPOSE 5432

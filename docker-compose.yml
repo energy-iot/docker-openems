@@ -26,11 +26,22 @@ services:
     build: 
       context: ./odoo
     image: odoo:latest
+    ports:
+      - "8069:8069"
+    depends_on:
+      - odoo-database
 
   odoo-database:
     build: 
       context: ./odoo-database
     image: odoo-db:latest
-    ports: 
-      - "5433:5432"
-   
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: myodoo
+      POSTGRES_DB: odoodb
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data
+
+volumes:
+  odoo-db-data:
