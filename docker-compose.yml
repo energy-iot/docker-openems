@@ -4,9 +4,7 @@ services:
     build: 
       context: ./openems-ui
     image: openems-ui:latest
-    networks:
-      - openems-network
-
+    
   openems-backend:
     build: 
       context: ./openems-backend
