@@ -40,7 +40,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
       portMappings = [
         {
-          containerPort = 80
+          containerPort = 8089
           hostPort      = 80
         }
       ]
