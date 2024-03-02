@@ -25,10 +25,14 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = 8192
 <<<<<<< HEAD
+<<<<<<< HEAD
   memory                   = 20480
 =======
   memory                   = 30720
 >>>>>>> 71ffc50 (Update ecs.tf)
+=======
+  memory                   = 20480
+>>>>>>> fa1edc2 (commit)
 
   runtime_platform {
     operating_system_family = "LINUX"
