@@ -177,7 +177,11 @@
         "FARGATE"
     ],
     "cpu": "8192",
+<<<<<<< HEAD:.github/workflows/openems-demo-td
     "memory": "20480",
+=======
+    "memory": "30720",
+>>>>>>> abc8e8c (Update openems-demo-td.json):.github/workflows/openems-demo-td.json
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
