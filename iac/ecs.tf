@@ -24,7 +24,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 8192
-  memory                   = 30720
+  memory                   = 20480
 
   runtime_platform {
     operating_system_family = "LINUX"
