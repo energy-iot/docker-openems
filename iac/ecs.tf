@@ -97,6 +97,13 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       ]
 
+      portMappings = [
+        {
+          containerPort = 8075
+          hostPort      = 8075
+        }
+      ]
+
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -112,6 +119,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     #   essential = false
 
 
+<<<<<<< HEAD
     #   portMappings = [
     #     {
     #       containerPort = 5432
@@ -128,11 +136,30 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     #     }
     #   }
     # },
+=======
+      portMappings = [
+        {
+          containerPort = 5432
+          hostPort      = 5432
+        }
+      ]
+
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
+          "awslogs-region"        = "${var.region}",
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    },
+>>>>>>> d6d161f (Open ports in ecs for addiitonal containers)
     {
       name      = "${var.project_name}-${var.environment}-container-odoo"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo}:${var.image_tag}"
       essential = false
 
+<<<<<<< HEAD
       environment = [
         {
           name  = "DB_HOST",
@@ -156,6 +183,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       ]
 
+=======
+>>>>>>> d6d161f (Open ports in ecs for addiitonal containers)
       portMappings = [
         {
           containerPort = 8069
@@ -185,6 +214,30 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
+<<<<<<< HEAD
+=======
+    },
+    {
+      name      = "${var.project_name}-${var.environment}-container-odoo-db"
+      image     = "${local.secrets.ecr_registry}/${var.image_name_odoo_db}:${var.image_tag}"
+      essential = false
+      
+      portMappings = [
+        {
+          containerPort = 5433
+          hostPort      = 5433
+        }
+      ]
+
+     logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
+          "awslogs-region"        = "${var.region}",
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+>>>>>>> d6d161f (Open ports in ecs for addiitonal containers)
     }
     # {
     #   name      = "${var.project_name}-${var.environment}-container-odoo-db"
