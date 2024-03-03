@@ -14,6 +14,7 @@ resource "aws_security_group" "openems_security_group" {
 
   ingress {
     description = "all traffic"
+<<<<<<< HEAD
     from_port   = 8069
     to_port     = 8089
     protocol    = "tcp"
@@ -22,6 +23,8 @@ resource "aws_security_group" "openems_security_group" {
 
   ingress {
     description = "all traffic"
+=======
+>>>>>>> de34f82 (updated security group)
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
