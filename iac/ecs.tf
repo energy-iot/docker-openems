@@ -59,6 +59,13 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       image     = "${local.secrets.ecr_registry}/${var.image_name_openems_backend}:${var.image_tag}"
       essential = false
 
+      portMappings = [
+        {
+          containerPort = 8075
+          hostPort      = 8075
+        }
+      ]
+
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -73,6 +80,14 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       image     = "${local.secrets.ecr_registry}/${var.image_name_openems_db}:${var.image_tag}"
       essential = false
 
+
+      portMappings = [
+        {
+          containerPort = 5432
+          hostPort      = 5432
+        }
+      ]
+
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -86,6 +101,13 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       name      = "${var.project_name}-${var.environment}-container-odoo"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo}:${var.image_tag}"
       essential = false
+
+      portMappings = [
+        {
+          containerPort = 8069
+          hostPort      = 8069
+        }
+      ]
 
       logConfiguration = {
         logDriver = "awslogs",
@@ -114,6 +136,13 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       name      = "${var.project_name}-${var.environment}-container-odoo-db"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo_db}:${var.image_tag}"
       essential = false
+      
+      portMappings = [
+        {
+          containerPort = 5433
+          hostPort      = 5433
+        }
+      ]
 
      logConfiguration = {
         logDriver = "awslogs",

@@ -29,7 +29,13 @@
             "name": "openems-demo-container-backend",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-backend:latest",
             "cpu": 0,
-            "portMappings": [],
+            "portMappings": [
+                {
+                    "containerPort": 8075,
+                    "hostPort": 8075,
+                    "protocol": "tcp"
+                }
+            ],
             "essential": false,
             "environment": [],
             "mountPoints": [],
@@ -47,7 +53,13 @@
             "name": "openems-demo-container-backend-db",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-db:latest",
             "cpu": 0,
-            "portMappings": [],
+            "portMappings": [
+                {
+                    "containerPort": 5432,
+                    "hostPort": 5432,
+                    "protocol": "tcp"
+                }
+            ],            
             "essential": false,
             "environment": [],
             "mountPoints": [],
@@ -65,7 +77,13 @@
             "name": "openems-demo-container-odoo",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo:latest",
             "cpu": 0,
-            "portMappings": [],
+            "portMappings": [
+                {
+                    "containerPort": 8069,
+                    "hostPort": 8069,
+                    "protocol": "tcp"
+                }
+            ],             
             "essential": false,
             "environment": [],
             "mountPoints": [],
@@ -83,7 +101,13 @@
             "name": "openems-demo-container-odoo-db",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo-db:latest",
             "cpu": 0,
-            "portMappings": [],
+            "portMappings": [
+                {
+                    "containerPort": 5433,
+                    "hostPort": 5433,
+                    "protocol": "tcp"
+                }
+            ],             
             "essential": false,
             "environment": [],
             "mountPoints": [],
