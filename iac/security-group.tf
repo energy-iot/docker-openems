@@ -15,16 +15,36 @@ resource "aws_security_group" "openems_security_group" {
   ingress {
     description = "all traffic"
 <<<<<<< HEAD
+<<<<<<< HEAD
     from_port   = 8069
     to_port     = 8089
+=======
+    from_port   = 8079
+    to_port     = 8079
+>>>>>>> e566370 (Update exposed ports through sg)
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+<<<<<<< HEAD
   ingress {
     description = "all traffic"
 =======
 >>>>>>> de34f82 (updated security group)
+=======
+
+  ingress {
+    description = "all traffic"
+    from_port   = 8082
+    to_port     = 8082
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
+  ingress {
+    description = "all traffic"
+>>>>>>> e566370 (Update exposed ports through sg)
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -42,6 +62,7 @@ resource "aws_security_group" "openems_security_group" {
     Name = "${var.project_name}-${var.environment}-openems-sg"
   }
 }
+<<<<<<< HEAD
 
 
 # create security group for the database
@@ -69,3 +90,5 @@ resource "aws_security_group" "database_security_group" {
     Name = "${var.project_name}-${var.environment}-database-sg"
   }
 }
+=======
+>>>>>>> e566370 (Update exposed ports through sg)
