@@ -10,11 +10,11 @@ services:
       context: ./openems-backend
     image: openems-backend:latest
     environment:
-      DB_HOST: openems-database  # Assumes the PostgreSQL service is named openems-database
+      DB_HOST: odoo-database # Assumes the PostgreSQL service is named openems-database
       DB_PORT: "5432"
-      DB_NAME: openemsdb
-      DB_USER: postgres
-      DB_PASSWORD: myopenemspassword
+      DB_NAME: odoo
+      DB_USER: odoo
+      DB_PASSWORD: myodoo
     depends_on:
       - openems-database
 
@@ -24,12 +24,12 @@ services:
     image: openems-edge:latest
     
 
-  openems-database:
-    build: 
-      context: ./openems-database
-    image: openems-db:latest
-    ports: 
-      - "5432:5432"
+  # openems-database:
+  #   build: 
+  #     context: ./openems-database
+  #   image: openems-db:latest
+  #   ports: 
+  #     - "5432:5432"
  
 
   odoo:
@@ -42,7 +42,7 @@ services:
       - odoo-database
     environment:
       HOST: odoo-database
-      PORT: "5433"
+      PORT: "5432"
       USER: odoo
       PASSWORD: myodoo
 
@@ -51,7 +51,7 @@ services:
       context: ./odoo-database
     image: odoo-db:latest
     ports:
-      - "5433:5432"
+      - "5432:5432"
     environment:
       POSTGRES_PASSWORD: myodoo
       POSTGRES_DB: odoodb
