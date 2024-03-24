@@ -20,14 +20,18 @@ env:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e830856 (commit)
+=======
+>>>>>>> 0a1f1e6 (deploy pipeline)
   TERRAFORM_ACTION: destroy
 <<<<<<< HEAD
   ECS_TD: .github/workflows/openems-deployment-td.json
   ECS_SERVICE: openems-deployment-service
   ECS_CLUSTER: openems-deployment-cluster
 =======
+<<<<<<< HEAD
 <<<<<<< HEAD
   TERRAFORM_ACTION: apply
 <<<<<<< HEAD
@@ -51,6 +55,11 @@ env:
   ECS_CLUSTER: openems-deployment-cluster
 >>>>>>> 1451aa8 (commit -s)
 =======
+=======
+=======
+  TERRAFORM_ACTION: apply
+>>>>>>> 67bf3ed (deploy pipeline)
+>>>>>>> 0a1f1e6 (deploy pipeline)
   ECS_TD: .github/workflows/openems-demo-td.json
   ECS_SERVICE: openems-demo-service
   ECS_CLUSTER: openems-demo-cluster
