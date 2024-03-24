@@ -17,12 +17,16 @@ env:
   IMAGE_NAME_VALUE_6: openems-edge
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   TERRAFORM_ACTION: destroy
   ECS_TD: .github/workflows/openems-deployment-td.json
   ECS_SERVICE: openems-deployment-service
   ECS_CLUSTER: openems-deployment-cluster
 =======
   TERRAFORM_ACTION: apply
+=======
+  TERRAFORM_ACTION: destroy
+>>>>>>> 6516294 (destroy pipeline)
   ECS_TD: .github/workflows/openems-demo-td.json
   ECS_SERVICE: openems-demo-service
   ECS_CLUSTER: openems-demo-cluster
