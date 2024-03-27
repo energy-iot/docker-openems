@@ -10,7 +10,6 @@ services:
       context: ./openems-backend
     image: openems-backend:latest
     environment:
-<<<<<<< HEAD
       DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
       DB_PORT: "5432"
       DB_NAME: openemsdb
@@ -18,15 +17,6 @@ services:
       DB_PASSWORD: openemspassword
     # depends_on:
     #   - openems-database
-=======
-      DB_HOST: odoo-database # Assumes the PostgreSQL service is named openems-database
-      DB_PORT: "5432"
-      DB_NAME: odoo
-      DB_USER: odoo
-      DB_PASSWORD: myodoo
-    depends_on:
-      - openems-database
->>>>>>> 6516294e638752b21236d39d9078ea87ec95602f
 
   openems-edge:
     build: 
@@ -51,7 +41,6 @@ services:
     # depends_on:
     #   - odoo-database
     environment:
-<<<<<<< HEAD
       DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
       DB_PORT: "5432"
       DB_NAME: openemsdb
@@ -69,24 +58,6 @@ services:
 #       POSTGRES_DB: odoodb
 #     volumes:
 #       - odoo-db-data:/var/lib/postgresql/data
-=======
-      HOST: odoo-database
-      PORT: "5432"
-      USER: odoo
-      PASSWORD: myodoo
-
-  odoo-database:
-    build: 
-      context: ./odoo-database
-    image: odoo-db:latest
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: myodoo
-      POSTGRES_DB: odoodb
-    volumes:
-      - odoo-db-data:/var/lib/postgresql/data
->>>>>>> 6516294e638752b21236d39d9078ea87ec95602f
 
 # volumes:
 #   odoo-db-data:
