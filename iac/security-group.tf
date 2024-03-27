@@ -65,8 +65,12 @@ resource "aws_security_group" "openems_security_group" {
     Name = "${var.project_name}-${var.environment}-openems-sg"
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 <<<<<<< HEAD
+=======
+}
+>>>>>>> 1451aa8 (commit -s)
 
 
 # create security group for the database
@@ -93,9 +97,13 @@ resource "aws_security_group" "database_security_group" {
   tags = {
     Name = "${var.project_name}-${var.environment}-database-sg"
   }
+<<<<<<< HEAD
 }
 =======
 >>>>>>> e566370 (Update exposed ports through sg)
 =======
 }
 >>>>>>> 39ef6f0 (commit)
+=======
+}
+>>>>>>> 1451aa8 (commit -s)

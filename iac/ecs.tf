@@ -89,6 +89,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           value = "openempassword"
         }
       ]
+<<<<<<< HEAD
 
       portMappings = [
         {
@@ -96,6 +97,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           hostPort      = 8075
         }
       ]
+=======
+>>>>>>> 1451aa8 (commit -s)
 
       portMappings = [
         {
@@ -120,12 +123,16 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1451aa8 (commit -s)
     #   portMappings = [
     #     {
     #       containerPort = 5432
     #       hostPort      = 5432
     #     }
     #   ]
+<<<<<<< HEAD
 
     #   logConfiguration = {
     #     logDriver = "awslogs",
@@ -154,12 +161,27 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       }
     },
 >>>>>>> d6d161f (Open ports in ecs for addiitonal containers)
+=======
+
+    #   logConfiguration = {
+    #     logDriver = "awslogs",
+    #     options = {
+    #       "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
+    #       "awslogs-region"        = "${var.region}",
+    #       "awslogs-stream-prefix" = "ecs"
+    #     }
+    #   }
+    # },
+>>>>>>> 1451aa8 (commit -s)
     {
       name      = "${var.project_name}-${var.environment}-container-odoo"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo}:${var.image_tag}"
       essential = false
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1451aa8 (commit -s)
       environment = [
         {
           name  = "DB_HOST",
@@ -183,8 +205,11 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       ]
 
+<<<<<<< HEAD
 =======
 >>>>>>> d6d161f (Open ports in ecs for addiitonal containers)
+=======
+>>>>>>> 1451aa8 (commit -s)
       portMappings = [
         {
           containerPort = 8069
@@ -215,6 +240,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     },
     {
@@ -238,6 +264,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       }
 >>>>>>> d6d161f (Open ports in ecs for addiitonal containers)
+=======
+>>>>>>> 1451aa8 (commit -s)
     }
     # {
     #   name      = "${var.project_name}-${var.environment}-container-odoo-db"
