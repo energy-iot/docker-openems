@@ -1,0 +1,427 @@
+[33mcommit 1451aa8215303d14fca0b9fa14222b6ec244053a[m
+Author: belloafeez <werkjober@gmail.com>
+Date:   Wed Mar 27 10:07:15 2024 +0100
+
+    commit -s
+
+[1mdiff --git a/.github/workflows/deploy-pipeline.yml b/.github/workflows/deploy-pipeline.yml[m
+[1mindex 812500f..37691df 100644[m
+[1m--- a/.github/workflows/deploy-pipeline.yml[m
+[1m+++ b/.github/workflows/deploy-pipeline.yml[m
+[36m@@ -11,14 +11,14 @@[m [menv:[m
+   AWS_REGION: us-east-1[m
+   IMAGE_NAME_VALUE_1: openems-ui [m
+   IMAGE_NAME_VALUE_2: openems-backend[m
+[31m-  IMAGE_NAME_VALUE_3: openems-db[m
+[32m+[m[32m  # IMAGE_NAME_VALUE_3: openems-db[m
+   IMAGE_NAME_VALUE_4: odoo[m
+[31m-  IMAGE_NAME_VALUE_5: odoo-db[m
+[32m+[m[32m  # IMAGE_NAME_VALUE_5: odoo-db[m
+   IMAGE_NAME_VALUE_6: openems-edge[m
+[31m-  TERRAFORM_ACTION: apply[m
+[32m+[m[32m  TERRAFORM_ACTION: destroy[m
+   ECS_TD: .github/workflows/openems-demo-td.json[m
+[31m-  ECS_SERVICE: openems-demo-service[m
+[31m-  ECS_CLUSTER: openems-demo-cluster[m
+[32m+[m[32m  ECS_SERVICE: openems-deployment-service[m
+[32m+[m[32m  ECS_CLUSTER: openems-deployment-cluster[m
+ [m
+ [m
+ [m
+[36m@@ -72,7 +72,7 @@[m [mjobs:[m
+       - name: Check if ECR repositories exist[m
+         env:[m
+           # List your repository names here  [m
+[31m-          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }},${{ env.IMAGE_NAME_VALUE_6 }}' [m
+[32m+[m[32m          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_6 }}'[m[41m [m
+         run: |[m
+           IFS=',' read -ra REPOS <<< "$REPO_NAMES"[m
+           for repo in "${REPOS[@]}"; do[m
+[36m@@ -90,7 +90,7 @@[m [mjobs:[m
+       - name: Create ECR repositories[m
+         env:[m
+           # List your repository names here  [m
+[31m-          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }},${{ env.IMAGE_NAME_VALUE_6 }}' [m
+[32m+[m[32m          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_6 }}'[m[41m [m
+         run: |[m
+           IFS=',' read -ra REPOS <<< "$REPO_NAMES"[m
+           for repo in "${REPOS[@]}"; do[m
+[36m@@ -142,12 +142,12 @@[m [mjobs:[m
+           format: 'sarif'[m
+           output: 'trivy-results.sarif'[m
+ [m
+[31m-      - name: Run Trivy vulnerability scanner[m
+[31m-        uses: aquasecurity/trivy-action@master[m
+[31m-        with:[m
+[31m-          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_3 }}:latest'[m
+[31m-          format: 'sarif'[m
+[31m-          output: 'trivy-results.sarif'[m
+[32m+[m[32m      # - name: Run Trivy vulnerability scanner[m
+[32m+[m[32m      #   uses: aquasecurity/trivy-action@master[m
+[32m+[m[32m      #   with:[m
+[32m+[m[32m      #     image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_3 }}:latest'[m
+[32m+[m[32m      #     format: 'sarif'[m
+[32m+[m[32m      #     output: 'trivy-results.sarif'[m
+ [m
+       - name: Run Trivy vulnerability scanner[m
+         uses: aquasecurity/trivy-action@master[m
+[36m@@ -156,12 +156,13 @@[m [mjobs:[m
+           format: 'sarif'[m
+           output: 'trivy-results.sarif'[m
+       [m
+[31m-      - name: Run Trivy vulnerability scanner[m
+[31m-        uses: aquasecurity/trivy-action@master[m
+[31m-        with:[m
+[31m-          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_5 }}:latest'[m
+[31m-          format: 'sarif'[m
+[31m-          output: 'trivy-results.sarif'[m
+[32m+[m[32m      # - name: Run Trivy vulnerability scanner[m
+[32m+[m[32m      #   uses: aquasecurity/trivy-action@master[m
+[32m+[m[32m      #   with:[m
+[32m+[m[32m      #     image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_5 }}:latest'[m
+[32m+[m[32m      #     format: 'sarif'[m
+[32m+[m[32m      #     output: 'trivy-results.sarif'[m
+[32m+[m
+       - name: Run Trivy vulnerability scanner[m
+         uses: aquasecurity/trivy-action@master[m
+         with:[m
+[36m@@ -209,35 +210,35 @@[m [mjobs:[m
+           container-name: openems-demo-container-backend[m
+           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_2 }}:latest[m
+       [m
+[31m-      - name: Modify Amazon ECS task definition with second container[m
+[31m-        id: render-backend-db-container[m
+[31m-        uses: aws-actions/amazon-ecs-render-task-definition@v1[m
+[31m-        with:[m
+[31m-          task-definition: ${{ steps.render-backend-container.outputs.task-definition }}[m
+[31m-          container-name: openems-demo-container-backend-db[m
+[31m-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_3 }}:latest[m
+[32m+[m[32m      # - name: Modify Amazon ECS task definition with second container[m
+[32m+[m[32m      #   id: render-backend-db-container[m
+[32m+[m[32m      #   uses: aws-actions/amazon-ecs-render-task-definition@v1[m
+[32m+[m[32m      #   with:[m
+[32m+[m[32m      #     task-definition: ${{ steps.render-backend-container.outputs.task-definition }}[m
+[32m+[m[32m      #     container-name: openems-demo-container-backend-db[m
+[32m+[m[32m      #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_3 }}:latest[m
+ [m
+       - name: Modify Amazon ECS task definition with third container[m
+         id: render-odoo-container[m
+         uses: aws-actions/amazon-ecs-render-task-definition@v1[m
+         with:[m
+[31m-          task-definition: ${{ steps.render-backend-db-container.outputs.task-definition }}[m
+[32m+[m[32m          task-definition: ${{ steps.render-backend-container.outputs.task-definition }}[m
+           container-name: openems-demo-container-odoo[m
+           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest[m
+ [m
+[31m-      - name: Modify Amazon ECS task definition with forth container[m
+[31m-        id: render-odoo-db-container[m
+[31m-        uses: aws-actions/amazon-ecs-render-task-definition@v1[m
+[31m-        with:[m
+[31m-          task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}[m
+[31m-          container-name: openems-demo-container-odoo-db[m
+[31m-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_5 }}:latest  [m
+[32m+[m[32m      # - name: Modify Amazon ECS task definition with forth container[m
+[32m+[m[32m      #   id: render-odoo-db-container[m
+[32m+[m[32m      #   uses: aws-actions/amazon-ecs-render-task-definition@v1[m
+[32m+[m[32m      #   with:[m
+[32m+[m[32m      #     task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}[m
+[32m+[m[32m      #     container-name: openems-demo-container-odoo-db[m
+[32m+[m[32m      #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_5 }}:latest[m[41m  [m
+       [m
+       - name: Modify Amazon ECS task definition with fifth container[m
+         id: render-edge-container[m
+         uses: aws-actions/amazon-ecs-render-task-definition@v1[m
+         with:[m
+[31m-          task-definition: ${{ steps.render-odoo-db-container.outputs.task-definition }}[m
+[32m+[m[32m          task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}[m
+           container-name: openems-demo-container-edge[m
+           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_6 }}:latest [m
+ [m
+[1mdiff --git a/.github/workflows/openems-demo-td.json b/.github/workflows/openems-demo-td[m
+[1msimilarity index 100%[m
+[1mrename from .github/workflows/openems-demo-td.json[m
+[1mrename to .github/workflows/openems-demo-td[m
+[1mdiff --git a/.github/workflows/openems-deployment-td.json b/.github/workflows/openems-deployment-td.json[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d0b2468[m
+[1m--- /dev/null[m
+[1m+++ b/.github/workflows/openems-deployment-td.json[m
+[36m@@ -0,0 +1,203 @@[m
+[32m+[m[32m{[m
+[32m+[m[32m    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:51",[m
+[32m+[m[32m    "containerDefinitions": [[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "openems-demo-container-ui",[m
+[32m+[m[32m            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-ui:latest",[m
+[32m+[m[32m            "cpu": 0,[m
+[32m+[m[32m            "portMappings": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "containerPort": 8089,[m
+[32m+[m[32m                    "hostPort": 8089,[m
+[32m+[m[32m                    "protocol": "tcp"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "essential": true,[m
+[32m+[m[32m            "environment": [],[m
+[32m+[m[32m            "mountPoints": [],[m
+[32m+[m[32m            "volumesFrom": [],[m
+[32m+[m[32m            "logConfiguration": {[m
+[32m+[m[32m                "logDriver": "awslogs",[m
+[32m+[m[32m                "options": {[m
+[32m+[m[32m                    "awslogs-group": "/ecs/openems-demo-td",[m
+[32m+[m[32m                    "awslogs-region": "us-east-1",[m
+[32m+[m[32m                    "awslogs-stream-prefix": "ecs"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "systemControls": [][m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "openems-demo-container-backend",[m
+[32m+[m[32m            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-backend:latest",[m
+[32m+[m[32m            "cpu": 0,[m
+[32m+[m[32m            "portMappings": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "containerPort": 8075,[m
+[32m+[m[32m                    "hostPort": 8075,[m
+[32m+[m[32m                    "protocol": "tcp"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "essential": false,[m
+[32m+[m[32m            "environment": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "DB_NAME",[m
+[32m+[m[32m                    "value": "openemsdb"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "DB_HOST",[m
+[32m+[m[32m                    "value": "applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "DB_PORT",[m
+[32m+[m[32m                    "value": "5432"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "DB_USER",[m
+[32m+[m[32m                    "value": "openems"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "DB_PASSWORD",[m
+[32m+[m[32m                    "value": "openempassword"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "mountPoints": [],[m
+[32m+[m[32m            "volumesFrom": [],[m
+[32m+[m[32m            "logConfiguration": {[m
+[32m+[m[32m                "logDriver": "awslogs",[m
+[32m+[m[32m                "options": {[m
+[32m+[m[32m                    "awslogs-group": "/ecs/openems-demo-td",[m
+[32m+[m[32m                    "awslogs-region": "us-east-1",[m
+[32m+[m[32m                    "awslogs-stream-prefix": "ecs"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "systemControls": [][m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "openems-demo-container-odoo",[m
+[32m+[m[32m            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo:latest",[m
+[32m+[m[32m            "cpu": 0,[m
+[32m+[m[32m            "portMappings": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "containerPort": 8069,[m
+[32m+[m[32m                    "hostPort": 8069,[m
+[32m+[m[32m                    "protocol": "tcp"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "essential": false,[m
+[32m+[m[32m            "environment": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "DB_NAME",[m
+[32m+[m[32m                    "value": "openemsdb"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "DB_HOST",[m
+[32m+[m[32m                    "value": "applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "DB_PORT",[m
+[32m+[m[32m                    "value": "5432"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "DB_USER",[m
+[32m+[m[32m                    "value": "openems"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "DB_PASSWORD",[m
+[32m+[m[32m                    "value": "openempassword"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "mountPoints": [],[m
+[32m+[m[32m            "volumesFrom": [],[m
+[32m+[m[32m            "logConfiguration": {[m
+[32m+[m[32m                "logDriver": "awslogs",[m
+[32m+[m[32m                "options": {[m
+[32m+[m[32m                    "awslogs-group": "/ecs/openems-demo-td",[m
+[32m+[m[32m                    "awslogs-region": "us-east-1",[m
+[32m+[m[32m                    "awslogs-stream-prefix": "ecs"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "systemControls": [][m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "openems-demo-container-edge",[m
+[32m+[m[32m            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-edge:latest",[m
+[32m+[m[32m            "cpu": 0,[m
+[32m+[m[32m            "portMappings": [],[m
+[32m+[m[32m            "essential": false,[m
+[32m+[m[32m            "environment": [],[m
+[32m+[m[32m            "mountPoints": [],[m
+[32m+[m[32m            "volumesFrom": [],[m
+[32m+[m[32m            "logConfiguration": {[m
+[32m+[m[32m                "logDriver": "awslogs",[m
+[32m+[m[32m                "options": {[m
+[32m+[m[32m                    "awslogs-group": "/ecs/openems-demo-td",[m
+[32m+[m[32m                    "awslogs-region": "us-east-1",[m
+[32m+[m[32m                    "awslogs-stream-prefix": "ecs"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "systemControls": [][m
+[32m+[m[32m        }[m
+[32m+[m[32m    ],[m
+[32m+[m[32m    "family": "openems-demo-td",[m
+[32m+[m[32m    "executionRoleArn": "arn:aws:iam::470298448112:role/openems-demo-ecs-task-execution-role",[m
+[32m+[m[32m    "networkMode": "awsvpc",[m
+[32m+[m[32m    "revision": 51,[m
+[32m+[m[32m    "volumes": [],[m
+[32m+[m[32m    "status": "ACTIVE",[m
+[32m+[m[32m    "requiresAttributes": [[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "ecs.capability.execution-role-awslogs"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "com.amazonaws.ecs.capability.ecr-auth"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "ecs.capability.increased-task-cpu-limit"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "ecs.capability.execution-role-ecr-pull"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "ecs.capability.task-eni"[m
+[32m+[m[32m        }[m
+[32m+[m[32m    ],[m
+[32m+[m[32m    "placementConstraints": [],[m
+[32m+[m[32m    "compatibilities": [[m
+[32m+[m[32m        "EC2",[m
+[32m+[m[32m        "FARGATE"[m
+[32m+[m[32m    ],[m
+[32m+[m[32m    "requiresCompatibilities": [[m
+[32m+[m[32m        "FARGATE"[m
+[32m+[m[32m    ],[m
+[32m+[m[32m    "cpu": "8192",[m
+[32m+[m[32m    "memory": "20480",[m
+[32m+[m[32m    "runtimePlatform": {[m
+[32m+[m[32m        "cpuArchitecture": "X86_64",[m
+[32m+[m[32m        "operatingSystemFamily": "LINUX"[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "registeredAt": "2024-03-27T07:54:03.622Z",[m
+[32m+[m[32m    "registeredBy": "arn:aws:iam::470298448112:user/axm-bello",[m
+[32m+[m[32m    "tags": [[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "key": "Project",[m
+[32m+[m[32m            "value": "openems"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "key": "Environment",[m
+[32m+[m[32m            "value": "demo"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "key": "Automation",[m
+[32m+[m[32m            "value": "terraform"[m
+[32m+[m[32m        }[m
+[32m+[m[32m    ][m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/docker-compose.yml b/docker-compose.yml[m
+[1mindex 510ac76..97815b7 100644[m
+[1m--- a/docker-compose.yml[m
+[1m+++ b/docker-compose.yml[m
+[36m@@ -10,13 +10,13 @@[m [mservices:[m
+       context: ./openems-backend[m
+     image: openems-backend:latest[m
+     environment:[m
+[31m-      DB_HOST: openems-database  # Assumes the PostgreSQL service is named openems-database[m
+[32m+[m[32m      DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database[m
+       DB_PORT: "5432"[m
+       DB_NAME: openemsdb[m
+[31m-      DB_USER: postgres[m
+[31m-      DB_PASSWORD: myopenemspassword[m
+[31m-    depends_on:[m
+[31m-      - openems-database[m
+[32m+[m[32m      DB_USER: openems[m
+[32m+[m[32m      DB_PASSWORD: openemspassword[m
+[32m+[m[32m    # depends_on:[m
+[32m+[m[32m    #   - openems-database[m
+ [m
+   openems-edge:[m
+     build: [m
+[36m@@ -24,12 +24,12 @@[m [mservices:[m
+     image: openems-edge:latest[m
+     [m
+ [m
+[31m-  openems-database:[m
+[31m-    build: [m
+[31m-      context: ./openems-database[m
+[31m-    image: openems-db:latest[m
+[31m-    ports: [m
+[31m-      - "5432:5432"[m
+[32m+[m[32m  # openems-database:[m
+[32m+[m[32m  #   build:[m[41m [m
+[32m+[m[32m  #     context: ./openems-database[m
+[32m+[m[32m  #   image: openems-db:latest[m
+[32m+[m[32m  #   ports:[m[41m [m
+[32m+[m[32m  #     - "5432:5432"[m
+  [m
+ [m
+   odoo:[m
+[36m@@ -38,25 +38,26 @@[m [mservices:[m
+     image: odoo:latest[m
+     ports:[m
+       - "8069:8069"[m
+[31m-    depends_on:[m
+[31m-      - odoo-database[m
+[32m+[m[32m    # depends_on:[m
+[32m+[m[32m    #   - odoo-database[m
+     environment:[m
+[31m-      HOST: odoo-database[m
+[31m-      PORT: "5433"[m
+[31m-      USER: odoo[m
+[31m-      PASSWORD: myodoo[m
+[32m+[m[32m      DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database[m
+[32m+[m[32m      DB_PORT: "5432"[m
+[32m+[m[32m      DB_NAME: openemsdb[m
+[32m+[m[32m      DB_USER: openems[m
+[32m+[m[32m      DB_PASSWORD: openemspassword[m
+ [m
+[31m-  odoo-database:[m
+[31m-    build: [m
+[31m-      context: ./odoo-database[m
+[31m-    image: odoo-db:latest[m
+[31m-    ports:[m
+[31m-      - "5433:5432"[m
+[31m-    environment:[m
+[31m-      POSTGRES_PASSWORD: myodoo[m
+[31m-      POSTGRES_DB: odoodb[m
+[31m-    volumes:[m
+[31m-      - odoo-db-data:/var/lib/postgresql/data[m
+[32m+[m[32m#   odoo-database:[m
+[32m

@@ -21,10 +21,13 @@ env:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> e830856 (commit)
 =======
 >>>>>>> 0a1f1e6 (deploy pipeline)
+=======
+>>>>>>> 4bea6d0 (commit -s)
   TERRAFORM_ACTION: destroy
 <<<<<<< HEAD
   ECS_TD: .github/workflows/openems-deployment-td.json
@@ -64,7 +67,16 @@ env:
   ECS_SERVICE: openems-demo-service
   ECS_CLUSTER: openems-demo-cluster
 >>>>>>> 8753433 (destroy)
+<<<<<<< HEAD
 >>>>>>> b69ced9 (Your commit message)
+=======
+=======
+  TERRAFORM_ACTION: destroy
+  ECS_TD: .github/workflows/openems-demo-td.json
+  ECS_SERVICE: openems-deployment-service
+  ECS_CLUSTER: openems-deployment-cluster
+>>>>>>> 1451aa8 (commit -s)
+>>>>>>> 4bea6d0 (commit -s)
 
 
 
@@ -263,13 +275,19 @@ jobs:
       #     task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4bea6d0 (commit -s)
       #     container-name: openems-deployment-container-backend-db
 =======
       #     container-name: openems-demo-container-backend-db
 >>>>>>> 1451aa8 (commit -s)
+<<<<<<< HEAD
 =======
       #     container-name: openems-deployment-container-backend-db
 >>>>>>> 7785bf1 (commit)
+=======
+>>>>>>> 4bea6d0 (commit -s)
       #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_3 }}:latest
 
       - name: Modify Amazon ECS task definition with third container
@@ -279,13 +297,19 @@ jobs:
           task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4bea6d0 (commit -s)
           container-name: openems-deployment-container-odoo
 =======
           container-name: openems-demo-container-odoo
 >>>>>>> 1451aa8 (commit -s)
+<<<<<<< HEAD
 =======
           container-name: openems-deployment-container-odoo
 >>>>>>> 7785bf1 (commit)
+=======
+>>>>>>> 4bea6d0 (commit -s)
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest
 
       # - name: Modify Amazon ECS task definition with forth container
@@ -295,13 +319,19 @@ jobs:
       #     task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4bea6d0 (commit -s)
       #     container-name: openems-deployment-container-odoo-db
 =======
       #     container-name: openems-demo-container-odoo-db
 >>>>>>> 1451aa8 (commit -s)
+<<<<<<< HEAD
 =======
       #     container-name: openems-deployment-container-odoo-db
 >>>>>>> 7785bf1 (commit)
+=======
+>>>>>>> 4bea6d0 (commit -s)
       #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_5 }}:latest  
       
       - name: Modify Amazon ECS task definition with fifth container
@@ -311,13 +341,19 @@ jobs:
           task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4bea6d0 (commit -s)
           container-name: openems-deployment-container-edge
 =======
           container-name: openems-demo-container-edge
 >>>>>>> 1451aa8 (commit -s)
+<<<<<<< HEAD
 =======
           container-name: openems-deployment-container-edge
 >>>>>>> 7785bf1 (commit)
+=======
+>>>>>>> 4bea6d0 (commit -s)
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_6 }}:latest 
 
       - name: Deploy to Amazon ECS service
