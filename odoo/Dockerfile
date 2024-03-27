@@ -2,5 +2,6 @@
 FROM odoo:16.0
 
 
+
 # Expose port 8069 for Odoo web interface
 EXPOSE 8069

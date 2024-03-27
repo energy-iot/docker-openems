@@ -31,6 +31,15 @@ variable "public_subnet_az2_cidr" {
   type        = string
 }
 
+variable "private_data_subnet_az1_cidr" {
+  description = "private data subnet az1 cidr block"
+  type        = string
+}
+
+variable "private_data_subnet_az2_cidr" {
+  description = "private data subnet az2 cidr block"
+  type        = string
+}
 
 # ecs variables
 variable "architecture" {
@@ -78,4 +87,47 @@ variable "image_tag" {
 variable "secrets_manager_secret_name" {
   description = "the secrets manager secret name"
   type        = string
+}
+
+
+#rds variables
+
+variable "engine_type" {
+    description = "engine type to run for the database"
+    type        = string
+}
+
+variable "engine_type_version" {
+    description = "engine type version to run for the database"
+    type        = string
+}
+
+variable "multi_az_deployment" {
+    description = "multi availabilty zone deployment"
+    type        = bool
+}
+
+variable "database_cluster_name" {
+    description = "multi availabilty zone deployment"
+    type        = string
+}
+
+variable "master_username" {
+    description = "master username of database cluster"
+    type        = string
+}
+
+variable "master_password" {
+    description = "master password of database cluster"
+    type        = string
+}
+
+variable "initial_database_name" {
+    description = "initial database name"
+    type        = string
+}
+
+variable "instance_class_type" {
+    description = "instance type name"
+    type        = string
 }

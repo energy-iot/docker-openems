@@ -10,13 +10,13 @@ services:
       context: ./openems-backend
     image: openems-backend:latest
     environment:
-      DB_HOST: openems-database  # Assumes the PostgreSQL service is named openems-database
+      DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
       DB_PORT: "5432"
       DB_NAME: openemsdb
-      DB_USER: postgres
-      DB_PASSWORD: myopenemspassword
-    depends_on:
-      - openems-database
+      DB_USER: openems
+      DB_PASSWORD: openemspassword
+    # depends_on:
+    #   - openems-database
 
   openems-edge:
     build: 
@@ -24,12 +24,12 @@ services:
     image: openems-edge:latest
     
 
-  openems-database:
-    build: 
-      context: ./openems-database
-    image: openems-db:latest
-    ports: 
-      - "5432:5432"
+  # openems-database:
+  #   build: 
+  #     context: ./openems-database
+  #   image: openems-db:latest
+  #   ports: 
+  #     - "5432:5432"
  
 
   odoo:
@@ -38,25 +38,26 @@ services:
     image: odoo:latest
     ports:
       - "8069:8069"
-    depends_on:
-      - odoo-database
+    # depends_on:
+    #   - odoo-database
     environment:
-      HOST: odoo-database
-      PORT: "5433"
-      USER: odoo
-      PASSWORD: myodoo
+      DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
+      DB_PORT: "5432"
+      DB_NAME: openemsdb
+      DB_USER: openems
+      DB_PASSWORD: openemspassword
 
-  odoo-database:
-    build: 
-      context: ./odoo-database
-    image: odoo-db:latest
-    ports:
-      - "5433:5432"
-    environment:
-      POSTGRES_PASSWORD: myodoo
-      POSTGRES_DB: odoodb
-    volumes:
-      - odoo-db-data:/var/lib/postgresql/data
+#   odoo-database:
+#     build: 
+#       context: ./odoo-database
+#     image: odoo-db:latest
+#     ports:
+#       - "5432:5432"
+#     environment:
+#       POSTGRES_PASSWORD: myodoo
+#       POSTGRES_DB: odoodb
+#     volumes:
+#       - odoo-db-data:/var/lib/postgresql/data
 
-volumes:
-  odoo-db-data:
+# volumes:
+#   odoo-db-data:

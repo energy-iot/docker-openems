@@ -1,0 +1,203 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:51",
+    "containerDefinitions": [
+        {
+            "name": "openems-demo-container-ui",
+            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-ui:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "containerPort": 8089,
+                    "hostPort": 8089,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/openems-demo-td",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "systemControls": []
+        },
+        {
+            "name": "openems-demo-container-backend",
+            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-backend:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "containerPort": 8075,
+                    "hostPort": 8075,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": false,
+            "environment": [
+                {
+                    "name": "DB_NAME",
+                    "value": "openemsdb"
+                },
+                {
+                    "name": "DB_HOST",
+                    "value": "applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
+                },
+                {
+                    "name": "DB_PORT",
+                    "value": "5432"
+                },
+                {
+                    "name": "DB_USER",
+                    "value": "openems"
+                },
+                {
+                    "name": "DB_PASSWORD",
+                    "value": "openempassword"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/openems-demo-td",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "systemControls": []
+        },
+        {
+            "name": "openems-demo-container-odoo",
+            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "containerPort": 8069,
+                    "hostPort": 8069,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": false,
+            "environment": [
+                {
+                    "name": "DB_NAME",
+                    "value": "openemsdb"
+                },
+                {
+                    "name": "DB_HOST",
+                    "value": "applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
+                },
+                {
+                    "name": "DB_PORT",
+                    "value": "5432"
+                },
+                {
+                    "name": "DB_USER",
+                    "value": "openems"
+                },
+                {
+                    "name": "DB_PASSWORD",
+                    "value": "openempassword"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/openems-demo-td",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "systemControls": []
+        },
+        {
+            "name": "openems-demo-container-edge",
+            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-edge:latest",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": false,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/openems-demo-td",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "openems-demo-td",
+    "executionRoleArn": "arn:aws:iam::470298448112:role/openems-demo-ecs-task-execution-role",
+    "networkMode": "awsvpc",
+    "revision": 51,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.increased-task-cpu-limit"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "8192",
+    "memory": "20480",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2024-03-27T07:54:03.622Z",
+    "registeredBy": "arn:aws:iam::470298448112:user/axm-bello",
+    "tags": [
+        {
+            "key": "Project",
+            "value": "openems"
+        },
+        {
+            "key": "Environment",
+            "value": "demo"
+        },
+        {
+            "key": "Automation",
+            "value": "terraform"
+        }
+    ]
+}
