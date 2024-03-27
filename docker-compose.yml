@@ -10,7 +10,6 @@ services:
       context: ./openems-backend
     image: openems-backend:latest
     environment:
-<<<<<<< HEAD
       DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
       DB_PORT: "5432"
       DB_NAME: openemsdb
@@ -18,6 +17,7 @@ services:
       DB_PASSWORD: openemspassword
     # depends_on:
     #   - openems-database
+<<<<<<< HEAD
 =======
       DB_HOST: odoo-database # Assumes the PostgreSQL service is named openems-database
       DB_PORT: "5432"
@@ -27,6 +27,8 @@ services:
     depends_on:
       - openems-database
 >>>>>>> 6516294 (destroy pipeline)
+=======
+>>>>>>> 203af17 (commit -s)
 
   openems-edge:
     build: 
@@ -51,7 +53,6 @@ services:
     # depends_on:
     #   - odoo-database
     environment:
-<<<<<<< HEAD
       DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
       DB_PORT: "5432"
       DB_NAME: openemsdb
@@ -69,6 +70,7 @@ services:
 #       POSTGRES_DB: odoodb
 #     volumes:
 #       - odoo-db-data:/var/lib/postgresql/data
+<<<<<<< HEAD
 =======
       HOST: odoo-database
       PORT: "5432"
@@ -87,6 +89,8 @@ services:
     volumes:
       - odoo-db-data:/var/lib/postgresql/data
 >>>>>>> 6516294 (destroy pipeline)
+=======
+>>>>>>> 203af17 (commit -s)
 
 # volumes:
 #   odoo-db-data:
