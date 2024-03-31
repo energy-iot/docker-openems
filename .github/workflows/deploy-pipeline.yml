@@ -16,7 +16,7 @@ env:
   # IMAGE_NAME_VALUE_5: odoo-db
   IMAGE_NAME_VALUE_6: openems-edge
   TERRAFORM_ACTION: apply
-  ECS_TD: .github/workflows/openems-demo-td.json
+  ECS_TD: .github/workflows/openems-deployment-td.json
   ECS_SERVICE: openems-deployment-service
   ECS_CLUSTER: openems-deployment-cluster
 
