@@ -25,6 +25,7 @@ env:
   ECS_CLUSTER: openems-deployment-cluster
 =======
   TERRAFORM_ACTION: apply
+<<<<<<< HEAD
 =======
   TERRAFORM_ACTION: destroy
 >>>>>>> 6516294 (destroy pipeline)
@@ -38,6 +39,9 @@ env:
   TERRAFORM_ACTION: apply
 >>>>>>> d20e115 (commit)
   ECS_TD: .github/workflows/openems-demo-td.json
+=======
+  ECS_TD: .github/workflows/openems-deployment-td.json
+>>>>>>> 2876937 (commit)
   ECS_SERVICE: openems-deployment-service
   ECS_CLUSTER: openems-deployment-cluster
 >>>>>>> 1451aa8 (commit -s)
