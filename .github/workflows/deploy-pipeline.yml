@@ -199,7 +199,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TD }}
-          container-name: openems-demo-container-ui
+          container-name: openems-deployment-container-ui
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_1 }}:latest
 
       - name: Modify Amazon ECS task definition with first container
@@ -207,7 +207,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-ui-container.outputs.task-definition }}
-          container-name: openems-demo-container-backend
+          container-name: openems-deployment-container-backend
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_2 }}:latest
       
       # - name: Modify Amazon ECS task definition with second container
@@ -215,7 +215,7 @@ jobs:
       #   uses: aws-actions/amazon-ecs-render-task-definition@v1
       #   with:
       #     task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
-      #     container-name: openems-demo-container-backend-db
+      #     container-name: openems-deployment-container-backend-db
       #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_3 }}:latest
 
       - name: Modify Amazon ECS task definition with third container
@@ -223,7 +223,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
-          container-name: openems-demo-container-odoo
+          container-name: openems-deployment-container-odoo
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest
 
       # - name: Modify Amazon ECS task definition with forth container
@@ -231,7 +231,7 @@ jobs:
       #   uses: aws-actions/amazon-ecs-render-task-definition@v1
       #   with:
       #     task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
-      #     container-name: openems-demo-container-odoo-db
+      #     container-name: openems-deployment-container-odoo-db
       #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_5 }}:latest  
       
       - name: Modify Amazon ECS task definition with fifth container
@@ -239,7 +239,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
-          container-name: openems-demo-container-edge
+          container-name: openems-deployment-container-edge
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_6 }}:latest 
 
       - name: Deploy to Amazon ECS service
