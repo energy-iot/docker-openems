@@ -19,6 +19,9 @@ env:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e830856 (commit)
   TERRAFORM_ACTION: destroy
   ECS_TD: .github/workflows/openems-deployment-td.json
   ECS_SERVICE: openems-deployment-service
