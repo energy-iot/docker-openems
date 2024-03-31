@@ -1,10 +1,14 @@
 {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td",
 =======
     "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:2",
 >>>>>>> 5de1b83 (commit)
+=======
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td",
+>>>>>>> 6300f5f (commit)
     "containerDefinitions": [
         {
             "name": "openems-deployment-container-ui",
