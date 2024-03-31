@@ -18,6 +18,7 @@ env:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   TERRAFORM_ACTION: destroy
   ECS_TD: .github/workflows/openems-deployment-td.json
   ECS_SERVICE: openems-deployment-service
@@ -33,6 +34,9 @@ env:
 >>>>>>> 67bf3ed (deploy pipeline)
 =======
   TERRAFORM_ACTION: destroy
+=======
+  TERRAFORM_ACTION: apply
+>>>>>>> d20e115 (commit)
   ECS_TD: .github/workflows/openems-demo-td.json
   ECS_SERVICE: openems-deployment-service
   ECS_CLUSTER: openems-deployment-cluster

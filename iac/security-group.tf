@@ -17,16 +17,22 @@ resource "aws_security_group" "openems_security_group" {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     from_port   = 8069
     to_port     = 8089
 =======
     from_port   = 8079
     to_port     = 8079
 >>>>>>> e566370 (Update exposed ports through sg)
+=======
+    from_port   = 8069
+    to_port     = 8089
+>>>>>>> d20e115 (commit)
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   ingress {
     description = "all traffic"
@@ -48,6 +54,10 @@ resource "aws_security_group" "openems_security_group" {
 >>>>>>> e566370 (Update exposed ports through sg)
 =======
 >>>>>>> 39ef6f0 (commit)
+=======
+  ingress {
+    description = "all traffic"
+>>>>>>> d20e115 (commit)
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
