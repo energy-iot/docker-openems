@@ -2,7 +2,7 @@
     "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:51",
     "containerDefinitions": [
         {
-            "name": "openems-demo-container-ui",
+            "name": "openems-deployment-container-ui",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-ui:latest",
             "cpu": 0,
             "portMappings": [
@@ -19,7 +19,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-demo-td",
+                    "awslogs-group": "/ecs/openems-deployment-td",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -27,7 +27,7 @@
             "systemControls": []
         },
         {
-            "name": "openems-demo-container-backend",
+            "name": "openems-deployment-container-backend",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-backend:latest",
             "cpu": 0,
             "portMappings": [
@@ -65,7 +65,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-demo-td",
+                    "awslogs-group": "/ecs/openems-deployment-td",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -73,7 +73,7 @@
             "systemControls": []
         },
         {
-            "name": "openems-demo-container-odoo",
+            "name": "openems-deployment-container-odoo",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo:latest",
             "cpu": 0,
             "portMappings": [
@@ -111,7 +111,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-demo-td",
+                    "awslogs-group": "/ecs/openems-deployment-td",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -119,7 +119,7 @@
             "systemControls": []
         },
         {
-            "name": "openems-demo-container-edge",
+            "name": "openems-deployment-container-edge",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-edge:latest",
             "cpu": 0,
             "portMappings": [],
@@ -130,7 +130,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-demo-td",
+                    "awslogs-group": "/ecs/openems-deployment-td",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -138,8 +138,8 @@
             "systemControls": []
         }
     ],
-    "family": "openems-demo-td",
-    "executionRoleArn": "arn:aws:iam::470298448112:role/openems-demo-ecs-task-execution-role",
+    "family": "openems-deployment-td",
+    "executionRoleArn": "arn:aws:iam::470298448112:role/openems-deployment-ecs-task-execution-role",
     "networkMode": "awsvpc",
     "revision": 51,
     "volumes": [],
@@ -193,7 +193,7 @@
         },
         {
             "key": "Environment",
-            "value": "demo"
+            "value": "deployment"
         },
         {
             "key": "Automation",
