@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:51",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:2",
     "containerDefinitions": [
         {
             "name": "openems-deployment-container-ui",
@@ -19,7 +19,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-deployment-td",
+                    "awslogs-group": "/ecs/openems-deployment-new-td",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -65,7 +65,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-deployment-td",
+                    "awslogs-group": "/ecs/openems-deployment-new-td",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -111,7 +111,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-deployment-td",
+                    "awslogs-group": "/ecs/openems-deployment-new-td",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -130,7 +130,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-deployment-td",
+                    "awslogs-group": "/ecs/openems-deployment-new-td",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -141,7 +141,7 @@
     "family": "openems-deployment-td",
     "executionRoleArn": "arn:aws:iam::470298448112:role/openems-deployment-ecs-task-execution-role",
     "networkMode": "awsvpc",
-    "revision": 51,
+    "revision": 2,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -184,7 +184,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-03-27T07:54:03.622Z",
+    "registeredAt": "2024-03-31T15:28:46.692Z",
     "registeredBy": "arn:aws:iam::470298448112:user/axm-bello",
     "tags": [
         {
