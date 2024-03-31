@@ -242,10 +242,14 @@ jobs:
       #   with:
       #     task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
 <<<<<<< HEAD
+<<<<<<< HEAD
       #     container-name: openems-deployment-container-backend-db
 =======
       #     container-name: openems-demo-container-backend-db
 >>>>>>> 1451aa8 (commit -s)
+=======
+      #     container-name: openems-deployment-container-backend-db
+>>>>>>> 7785bf1 (commit)
       #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_3 }}:latest
 
       - name: Modify Amazon ECS task definition with third container
@@ -254,10 +258,14 @@ jobs:
         with:
           task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
 <<<<<<< HEAD
+<<<<<<< HEAD
           container-name: openems-deployment-container-odoo
 =======
           container-name: openems-demo-container-odoo
 >>>>>>> 1451aa8 (commit -s)
+=======
+          container-name: openems-deployment-container-odoo
+>>>>>>> 7785bf1 (commit)
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest
 
       # - name: Modify Amazon ECS task definition with forth container
@@ -266,10 +274,14 @@ jobs:
       #   with:
       #     task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
 <<<<<<< HEAD
+<<<<<<< HEAD
       #     container-name: openems-deployment-container-odoo-db
 =======
       #     container-name: openems-demo-container-odoo-db
 >>>>>>> 1451aa8 (commit -s)
+=======
+      #     container-name: openems-deployment-container-odoo-db
+>>>>>>> 7785bf1 (commit)
       #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_5 }}:latest  
       
       - name: Modify Amazon ECS task definition with fifth container
@@ -278,10 +290,14 @@ jobs:
         with:
           task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
 <<<<<<< HEAD
+<<<<<<< HEAD
           container-name: openems-deployment-container-edge
 =======
           container-name: openems-demo-container-edge
 >>>>>>> 1451aa8 (commit -s)
+=======
+          container-name: openems-deployment-container-edge
+>>>>>>> 7785bf1 (commit)
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_6 }}:latest 
 
       - name: Deploy to Amazon ECS service
