@@ -23,10 +23,12 @@ env:
 =======
 >>>>>>> e830856 (commit)
   TERRAFORM_ACTION: destroy
+<<<<<<< HEAD
   ECS_TD: .github/workflows/openems-deployment-td.json
   ECS_SERVICE: openems-deployment-service
   ECS_CLUSTER: openems-deployment-cluster
 =======
+<<<<<<< HEAD
   TERRAFORM_ACTION: apply
 <<<<<<< HEAD
 =======
@@ -48,6 +50,12 @@ env:
   ECS_SERVICE: openems-deployment-service
   ECS_CLUSTER: openems-deployment-cluster
 >>>>>>> 1451aa8 (commit -s)
+=======
+  ECS_TD: .github/workflows/openems-demo-td.json
+  ECS_SERVICE: openems-demo-service
+  ECS_CLUSTER: openems-demo-cluster
+>>>>>>> 8753433 (destroy)
+>>>>>>> b69ced9 (Your commit message)
 
 
 
