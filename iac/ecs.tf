@@ -10,7 +10,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 
 # create cloudwatch log group
 resource "aws_cloudwatch_log_group" "log_group" {
-  name = "/ecs/${var.project_name}-${var.environment}-td"
+  name = "/ecs/${var.project_name}-${var.environment}-new-td"
 
   lifecycle {
     create_before_destroy = true
@@ -23,8 +23,16 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 4096
-  memory                   = 12288
+  cpu                      = 8192
+<<<<<<< HEAD
+<<<<<<< HEAD
+  memory                   = 20480
+=======
+  memory                   = 30720
+>>>>>>> 71ffc50 (Update ecs.tf)
+=======
+  memory                   = 20480
+>>>>>>> fa1edc2 (commit)
 
   runtime_platform {
     operating_system_family = "LINUX"
@@ -58,6 +66,46 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       name      = "${var.project_name}-${var.environment}-container-backend"
       image     = "${local.secrets.ecr_registry}/${var.image_name_openems_backend}:${var.image_tag}"
       essential = false
+      
+      environment = [
+        {
+          name  = "DB_HOST",
+          value = "applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
+        },
+        {
+          name  = "DB_PORT",
+          value = "5432"
+        },
+        {
+          name  = "DB_NAME",
+          value = "openemsdb"
+        },
+        {
+          name  = "DB_USER",
+          value = "openems"
+        },
+        {
+          name  = "DB_PASSWORD",
+          value = "openempassword"
+        }
+      ]
+<<<<<<< HEAD
+
+      portMappings = [
+        {
+          containerPort = 8075
+          hostPort      = 8075
+        }
+      ]
+=======
+>>>>>>> 1451aa8 (commit -s)
+
+      portMappings = [
+        {
+          containerPort = 8075
+          hostPort      = 8075
+        }
+      ]
 
       logConfiguration = {
         logDriver = "awslogs",
@@ -68,10 +116,40 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       }
     },
-    {
-      name      = "${var.project_name}-${var.environment}-container-backend-db"
-      image     = "${local.secrets.ecr_registry}/${var.image_name_openems_db}:${var.image_tag}"
-      essential = false
+    # {
+    #   name      = "${var.project_name}-${var.environment}-container-backend-db"
+    #   image     = "${local.secrets.ecr_registry}/${var.image_name_openems_db}:${var.image_tag}"
+    #   essential = false
+
+
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1451aa8 (commit -s)
+    #   portMappings = [
+    #     {
+    #       containerPort = 5432
+    #       hostPort      = 5432
+    #     }
+    #   ]
+<<<<<<< HEAD
+
+    #   logConfiguration = {
+    #     logDriver = "awslogs",
+    #     options = {
+    #       "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
+    #       "awslogs-region"        = "${var.region}",
+    #       "awslogs-stream-prefix" = "ecs"
+    #     }
+    #   }
+    # },
+=======
+      portMappings = [
+        {
+          containerPort = 5432
+          hostPort      = 5432
+        }
+      ]
 
       logConfiguration = {
         logDriver = "awslogs",
@@ -82,10 +160,62 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       }
     },
+>>>>>>> d6d161f (Open ports in ecs for addiitonal containers)
+=======
+
+    #   logConfiguration = {
+    #     logDriver = "awslogs",
+    #     options = {
+    #       "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
+    #       "awslogs-region"        = "${var.region}",
+    #       "awslogs-stream-prefix" = "ecs"
+    #     }
+    #   }
+    # },
+>>>>>>> 1451aa8 (commit -s)
     {
       name      = "${var.project_name}-${var.environment}-container-odoo"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo}:${var.image_tag}"
       essential = false
+
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1451aa8 (commit -s)
+      environment = [
+        {
+          name  = "DB_HOST",
+          value = "applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
+        },
+        {
+          name  = "DB_PORT",
+          value = "5432"
+        },
+        {
+          name  = "DB_NAME",
+          value = "openemsdb"
+        },
+        {
+          name  = "DB_USER",
+          value = "openems"
+        },
+        {
+          name  = "DB_PASSWORD",
+          value = "openempassword"
+        }
+      ]
+
+<<<<<<< HEAD
+=======
+>>>>>>> d6d161f (Open ports in ecs for addiitonal containers)
+=======
+>>>>>>> 1451aa8 (commit -s)
+      portMappings = [
+        {
+          containerPort = 8069
+          hostPort      = 8069
+        }
+      ]
 
       logConfiguration = {
         logDriver = "awslogs",
@@ -109,11 +239,21 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
     },
     {
       name      = "${var.project_name}-${var.environment}-container-odoo-db"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo_db}:${var.image_tag}"
       essential = false
+      
+      portMappings = [
+        {
+          containerPort = 5433
+          hostPort      = 5433
+        }
+      ]
 
      logConfiguration = {
         logDriver = "awslogs",
@@ -123,7 +263,31 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
+>>>>>>> d6d161f (Open ports in ecs for addiitonal containers)
+=======
+>>>>>>> 1451aa8 (commit -s)
     }
+    # {
+    #   name      = "${var.project_name}-${var.environment}-container-odoo-db"
+    #   image     = "${local.secrets.ecr_registry}/${var.image_name_odoo_db}:${var.image_tag}"
+    #   essential = false
+      
+    #   portMappings = [
+    #     {
+    #       containerPort = 5433
+    #       hostPort      = 5433
+    #     }
+    #   ]
+
+    #  logConfiguration = {
+    #     logDriver = "awslogs",
+    #     options = {
+    #       "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
+    #       "awslogs-region"        = "${var.region}",
+    #       "awslogs-stream-prefix" = "ecs"
+    #     }
+    #   }
+    # }
   ])
 }
 

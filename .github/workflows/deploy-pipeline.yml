@@ -11,14 +11,72 @@ env:
   AWS_REGION: us-east-1
   IMAGE_NAME_VALUE_1: openems-ui 
   IMAGE_NAME_VALUE_2: openems-backend
-  IMAGE_NAME_VALUE_3: openems-db
+  # IMAGE_NAME_VALUE_3: openems-db
   IMAGE_NAME_VALUE_4: odoo
-  IMAGE_NAME_VALUE_5: odoo-db
+  # IMAGE_NAME_VALUE_5: odoo-db
   IMAGE_NAME_VALUE_6: openems-edge
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e830856 (commit)
+=======
+>>>>>>> 0a1f1e6 (deploy pipeline)
+=======
+>>>>>>> 4bea6d0 (commit -s)
   TERRAFORM_ACTION: destroy
+<<<<<<< HEAD
+  ECS_TD: .github/workflows/openems-deployment-td.json
+  ECS_SERVICE: openems-deployment-service
+  ECS_CLUSTER: openems-deployment-cluster
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+  TERRAFORM_ACTION: apply
+<<<<<<< HEAD
+=======
+  TERRAFORM_ACTION: destroy
+>>>>>>> 6516294 (destroy pipeline)
   ECS_TD: .github/workflows/openems-demo-td.json
   ECS_SERVICE: openems-demo-service
   ECS_CLUSTER: openems-demo-cluster
+>>>>>>> 67bf3ed (deploy pipeline)
+=======
+  TERRAFORM_ACTION: destroy
+=======
+  TERRAFORM_ACTION: apply
+>>>>>>> d20e115 (commit)
+  ECS_TD: .github/workflows/openems-demo-td.json
+=======
+  ECS_TD: .github/workflows/openems-deployment-td.json
+>>>>>>> 2876937 (commit)
+  ECS_SERVICE: openems-deployment-service
+  ECS_CLUSTER: openems-deployment-cluster
+>>>>>>> 1451aa8 (commit -s)
+=======
+=======
+=======
+  TERRAFORM_ACTION: apply
+>>>>>>> 67bf3ed (deploy pipeline)
+>>>>>>> 0a1f1e6 (deploy pipeline)
+  ECS_TD: .github/workflows/openems-demo-td.json
+  ECS_SERVICE: openems-demo-service
+  ECS_CLUSTER: openems-demo-cluster
+>>>>>>> 8753433 (destroy)
+<<<<<<< HEAD
+>>>>>>> b69ced9 (Your commit message)
+=======
+=======
+  TERRAFORM_ACTION: destroy
+  ECS_TD: .github/workflows/openems-demo-td.json
+  ECS_SERVICE: openems-deployment-service
+  ECS_CLUSTER: openems-deployment-cluster
+>>>>>>> 1451aa8 (commit -s)
+>>>>>>> 4bea6d0 (commit -s)
 
 
 
@@ -72,7 +130,7 @@ jobs:
       - name: Check if ECR repositories exist
         env:
           # List your repository names here  
-          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }},${{ env.IMAGE_NAME_VALUE_6 }}' 
+          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_6 }}' 
         run: |
           IFS=',' read -ra REPOS <<< "$REPO_NAMES"
           for repo in "${REPOS[@]}"; do
@@ -90,7 +148,7 @@ jobs:
       - name: Create ECR repositories
         env:
           # List your repository names here  
-          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_3 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_5 }},${{ env.IMAGE_NAME_VALUE_6 }}' 
+          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_6 }}' 
         run: |
           IFS=',' read -ra REPOS <<< "$REPO_NAMES"
           for repo in "${REPOS[@]}"; do
@@ -142,12 +200,12 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_3 }}:latest'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+      # - name: Run Trivy vulnerability scanner
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_3 }}:latest'
+      #     format: 'sarif'
+      #     output: 'trivy-results.sarif'
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -156,12 +214,13 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
       
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_5 }}:latest'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+      # - name: Run Trivy vulnerability scanner
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_5 }}:latest'
+      #     format: 'sarif'
+      #     output: 'trivy-results.sarif'
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -198,7 +257,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TD }}
-          container-name: openems-demo-container-ui
+          container-name: openems-deployment-container-ui
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_1 }}:latest
 
       - name: Modify Amazon ECS task definition with first container
@@ -206,44 +265,100 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-ui-container.outputs.task-definition }}
-          container-name: openems-demo-container-backend
+          container-name: openems-deployment-container-backend
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_2 }}:latest
       
-      - name: Modify Amazon ECS task definition with second container
-        id: render-backend-db-container
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
-          container-name: openems-demo-container-backend-db
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_3 }}:latest
+      # - name: Modify Amazon ECS task definition with second container
+      #   id: render-backend-db-container
+      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+      #   with:
+      #     task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4bea6d0 (commit -s)
+      #     container-name: openems-deployment-container-backend-db
+=======
+      #     container-name: openems-demo-container-backend-db
+>>>>>>> 1451aa8 (commit -s)
+<<<<<<< HEAD
+=======
+      #     container-name: openems-deployment-container-backend-db
+>>>>>>> 7785bf1 (commit)
+=======
+>>>>>>> 4bea6d0 (commit -s)
+      #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_3 }}:latest
 
       - name: Modify Amazon ECS task definition with third container
         id: render-odoo-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.render-backend-db-container.outputs.task-definition }}
+          task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4bea6d0 (commit -s)
+          container-name: openems-deployment-container-odoo
+=======
           container-name: openems-demo-container-odoo
+>>>>>>> 1451aa8 (commit -s)
+<<<<<<< HEAD
+=======
+          container-name: openems-deployment-container-odoo
+>>>>>>> 7785bf1 (commit)
+=======
+>>>>>>> 4bea6d0 (commit -s)
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest
 
-      - name: Modify Amazon ECS task definition with forth container
-        id: render-odoo-db-container
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
-          container-name: openems-demo-container-odoo-db
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_5 }}:latest  
+      # - name: Modify Amazon ECS task definition with forth container
+      #   id: render-odoo-db-container
+      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+      #   with:
+      #     task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4bea6d0 (commit -s)
+      #     container-name: openems-deployment-container-odoo-db
+=======
+      #     container-name: openems-demo-container-odoo-db
+>>>>>>> 1451aa8 (commit -s)
+<<<<<<< HEAD
+=======
+      #     container-name: openems-deployment-container-odoo-db
+>>>>>>> 7785bf1 (commit)
+=======
+>>>>>>> 4bea6d0 (commit -s)
+      #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_5 }}:latest  
       
       - name: Modify Amazon ECS task definition with fifth container
         id: render-edge-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.render-odoo-db-container.outputs.task-definition }}
+          task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4bea6d0 (commit -s)
+          container-name: openems-deployment-container-edge
+=======
           container-name: openems-demo-container-edge
+>>>>>>> 1451aa8 (commit -s)
+<<<<<<< HEAD
+=======
+          container-name: openems-deployment-container-edge
+>>>>>>> 7785bf1 (commit)
+=======
+>>>>>>> 4bea6d0 (commit -s)
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_6 }}:latest 
 
       - name: Deploy to Amazon ECS service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.render-odoo-db-container.outputs.task-definition }}
+          task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
