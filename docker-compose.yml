@@ -7,7 +7,7 @@ services:
     
   openems-backend:
     build: 
-    context: ./openems-backend  # hello this is a test comment - AB
+      context: ./openems-backend
     image: openems-backend:latest
     environment:
       DB_HOST: openems-database  # Assumes the PostgreSQL service is named openems-database
