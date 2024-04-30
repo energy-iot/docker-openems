@@ -10,7 +10,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 
 # create cloudwatch log group
 resource "aws_cloudwatch_log_group" "log_group" {
-  name = "/ecs/${var.project_name}-${var.environment}-tds"
+  name = "/ecs/${var.project_name}-${var.environment}-new-td"
 
   lifecycle {
     create_before_destroy = true
@@ -23,13 +23,13 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 4096
-  memory                   = 12288
+  cpu                      = 8192
+  memory                   = 20480
 
   runtime_platform {
     operating_system_family = "LINUX"
     cpu_architecture        = var.architecture
-  }
+  } 
 
   # create container definition
   container_definitions = jsonencode([
@@ -40,8 +40,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
       portMappings = [
         {
-          containerPort = 80
-          hostPort      = 80
+          containerPort = 8089
+          hostPort      = 8089
         }
       ]
 
@@ -54,11 +54,12 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       }
     },
+
     {
       name      = "${var.project_name}-${var.environment}-container-backend"
       image     = "${local.secrets.ecr_registry}/${var.image_name_openems_backend}:${var.image_tag}"
       essential = false
-
+      
       environment = [
         {
           name  = "DB_HOST",
@@ -89,7 +90,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       ]
 
-
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -100,20 +100,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       }
     },
 
-    {
-      name      = "${var.project_name}-${var.environment}-container-backend-db"
-      image     = "${local.secrets.ecr_registry}/${var.image_name_openems_db}:${var.image_tag}"
-      essential = false
-
-      logConfiguration = {
-        logDriver = "awslogs",
-        options = {
-          "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
-          "awslogs-region"        = "${var.region}",
-          "awslogs-stream-prefix" = "ecs"
-        }
-      }
-    },
     {
       name      = "${var.project_name}-${var.environment}-container-odoo"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo}:${var.image_tag}"
@@ -158,18 +144,11 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       }
     },
+
     {
-      name      = "${var.project_name}-${var.environment}-container-odoo-db"
-      image     = "${local.secrets.ecr_registry}/${var.image_name_odoo_db}:${var.image_tag}"
+      name      = "${var.project_name}-${var.environment}-container-edge"
+      image     = "${local.secrets.ecr_registry}/${var.image_name_openems_edge}:${var.image_tag}"
       essential = false
-
-      portMappings = [
-        {
-          containerPort = 5433
-          hostPort      = 5433
-        }
-      ]
-
 
       logConfiguration = {
         logDriver = "awslogs",
@@ -179,10 +158,29 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
-    }
+    },
+
+      name      = "${var.project_name}-${var.environment}-container-odoo-db"
+      image     = "${local.secrets.ecr_registry}/${var.image_name_odoo_db}:${var.image_tag}"
+      essential = false
+      
+      portMappings = [
+        {
+          containerPort = 5433
+          hostPort      = 5433
+        }
+      ]
+
+     logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
+          "awslogs-region"        = "${var.region}",
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
   ])
 }
-
 
 # create ecs service
 resource "aws_ecs_service" "ecs_service" {

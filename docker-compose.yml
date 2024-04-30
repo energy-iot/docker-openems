@@ -17,23 +17,45 @@ services:
       DB_PASSWORD: openemspassword
     # depends_on:
     #   - openems-database
-<<<<<<< HEAD
-=======
-      DB_HOST: odoo-database # Assumes the PostgreSQL service is named openems-database
-      DB_PORT: "5432"
-      DB_NAME: odoo
-      DB_USER: odoo
-      DB_PASSWORD: myodoo
-    depends_on:
-      - openems-database
->>>>>>> 6516294 (destroy pipeline)
-=======
->>>>>>> 203af17 (commit -s)
 
   openems-edge:
     build: 
       context: ./openems-edge
     image: openems-edge:latest
+
+db:
+    image: postgres:15
+    user: root
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo16@2022      
+      - POSTGRES_DB=postgres
+    restart: always             # run as a service
+    volumes:
+        - ./postgresql:/var/lib/postgresql/data
+
+odoo16:
+    image: odoo:16
+    user: root
+    depends_on:
+      - db
+    ports:
+      - "10016:8069"
+      - "20016:8072" # live chat
+    tty: true
+    command: --
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo16@2022
+    volumes:
+      #- /etc/timezone:/etc/timezone:ro
+      #- /etc/localtime:/etc/localtime:ro
+      # - ./entrypoint.sh:/entrypoint.sh   # if you want to install additional Python packages, uncomment this line!
+      - ./addons:/mnt/extra-addons
+      - ./etc:/etc/odoo
+    restart: always 
+
     
 
   # openems-database:
@@ -44,20 +66,20 @@ services:
   #     - "5432:5432"
  
 
-  odoo:
-    build: 
-      context: ./odoo
-    image: odoo:latest
-    ports:
-      - "8069:8069"
-    # depends_on:
-    #   - odoo-database
-    environment:
-      DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
-      DB_PORT: "5432"
-      DB_NAME: openemsdb
-      DB_USER: openems
-      DB_PASSWORD: openemspassword
+  # odoo:
+  #   build: 
+  #     context: ./odoo
+  #   image: odoo:latest
+  #   ports:
+  #     - "8069:8069"
+  #   # depends_on:
+  #   #   - odoo-database
+  #   environment:
+  #     DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
+  #     DB_PORT: "5432"
+  #     DB_NAME: openemsdb
+  #     DB_USER: openems
+  #     DB_PASSWORD: openemspassword
 
 #   odoo-database:
 #     build: 
@@ -70,27 +92,5 @@ services:
 #       POSTGRES_DB: odoodb
 #     volumes:
 #       - odoo-db-data:/var/lib/postgresql/data
-<<<<<<< HEAD
-=======
-      HOST: odoo-database
-      PORT: "5432"
-      USER: odoo
-      PASSWORD: myodoo
-
-  odoo-database:
-    build: 
-      context: ./odoo-database
-    image: odoo-db:latest
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: myodoo
-      POSTGRES_DB: odoodb
-    volumes:
-      - odoo-db-data:/var/lib/postgresql/data
->>>>>>> 6516294 (destroy pipeline)
-=======
->>>>>>> 203af17 (commit -s)
-
 # volumes:
 #   odoo-db-data:

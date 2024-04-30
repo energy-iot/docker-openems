@@ -1,45 +1,64 @@
 # create security group for the application load balancer
 resource "aws_security_group" "openems_security_group" {
   name        = "${var.project_name}-${var.environment}-openems-sg"
-  description = "enable LL access on port 80/443"
+  description = "enable access on port 80/8089"
   vpc_id      = aws_vpc.vpc.id
 
   ingress {
     description = "all traffic"
-    from_port   = 0
-    to_port     = 0
+    from_port   = 8089
+    to_port     = 8089
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     description = "all traffic"
-    from_port   = 8075
-    to_port     = 8075
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "all traffic"
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
     from_port   = 8069
-    to_port     = 8069
+    to_port     = 8089
+=======
+    from_port   = 8079
+    to_port     = 8079
+>>>>>>> e566370 (Update exposed ports through sg)
+=======
+    from_port   = 8069
+    to_port     = 8089
+>>>>>>> d20e115 (commit)
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
   ingress {
     description = "all traffic"
-    from_port   = 8086
-    to_port     = 8086
+=======
+>>>>>>> de34f82 (updated security group)
+=======
+
+  ingress {
+    description = "all traffic"
+    from_port   = 8082
+    to_port     = 8082
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+
   ingress {
     description = "all traffic"
-    from_port   = 8087
-    to_port     = 8087
+>>>>>>> e566370 (Update exposed ports through sg)
+=======
+>>>>>>> 39ef6f0 (commit)
+=======
+  ingress {
+    description = "all traffic")
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -54,7 +73,6 @@ resource "aws_security_group" "openems_security_group" {
   tags = {
     Name = "${var.project_name}-${var.environment}-openems-sg"
   }
-}
 
 # create security group for the database
 resource "aws_security_group" "database_security_group" {
@@ -80,4 +98,13 @@ resource "aws_security_group" "database_security_group" {
   tags = {
     Name = "${var.project_name}-${var.environment}-database-sg"
   }
+<<<<<<< HEAD
 }
+=======
+>>>>>>> e566370 (Update exposed ports through sg)
+=======
+}
+>>>>>>> 39ef6f0 (commit)
+=======
+}
+>>>>>>> 1451aa8 (commit -s)
