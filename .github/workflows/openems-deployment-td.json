@@ -1,43 +1,8 @@
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td",
-=======
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:2",
->>>>>>> 5de1b83 (commit)
-=======
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td",
->>>>>>> 6300f5f (commit)
-=======
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:2",
->>>>>>> 37a9969 (commit)
-=======
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td",
->>>>>>> 7785bf1 (commit)
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:4",
     "containerDefinitions": [
         {
             "name": "openems-deployment-container-ui",
-=======
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:51",
-    "containerDefinitions": [
-        {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "name": "openems-demo-container-ui",
->>>>>>> 1451aa8 (commit -s)
-=======
-            "name": "openems-deployment-container-ui",
->>>>>>> d20e115 (commit)
-=======
-            "name": "openems-demo-container-ui",
->>>>>>> 1451aa8 (commit -s)
->>>>>>> 4bea6d0 (commit -s)
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-ui:latest",
             "cpu": 0,
             "portMappings": [
@@ -54,25 +19,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
                     "awslogs-group": "/ecs/openems-deployment-new-td",
-=======
-                    "awslogs-group": "/ecs/openems-demo-td",
->>>>>>> 1451aa8 (commit -s)
-<<<<<<< HEAD
-=======
-                    "awslogs-group": "/ecs/openems-deployment-td",
->>>>>>> d20e115 (commit)
-=======
-                    "awslogs-group": "/ecs/openems-deployment-new-td",
->>>>>>> 5de1b83 (commit)
-=======
->>>>>>> 4bea6d0 (commit -s)
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -80,21 +27,7 @@
             "systemControls": []
         },
         {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
             "name": "openems-deployment-container-backend",
-=======
-            "name": "openems-demo-container-backend",
->>>>>>> 1451aa8 (commit -s)
-<<<<<<< HEAD
-=======
-            "name": "openems-deployment-container-backend",
->>>>>>> d20e115 (commit)
-=======
->>>>>>> 4bea6d0 (commit -s)
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-backend:latest",
             "cpu": 0,
             "portMappings": [
@@ -132,25 +65,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
                     "awslogs-group": "/ecs/openems-deployment-new-td",
-=======
-                    "awslogs-group": "/ecs/openems-demo-td",
->>>>>>> 1451aa8 (commit -s)
-<<<<<<< HEAD
-=======
-                    "awslogs-group": "/ecs/openems-deployment-td",
->>>>>>> d20e115 (commit)
-=======
-                    "awslogs-group": "/ecs/openems-deployment-new-td",
->>>>>>> 5de1b83 (commit)
-=======
->>>>>>> 4bea6d0 (commit -s)
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -158,21 +73,7 @@
             "systemControls": []
         },
         {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
             "name": "openems-deployment-container-odoo",
-=======
-            "name": "openems-demo-container-odoo",
->>>>>>> 1451aa8 (commit -s)
-<<<<<<< HEAD
-=======
-            "name": "openems-deployment-container-odoo",
->>>>>>> d20e115 (commit)
-=======
->>>>>>> 4bea6d0 (commit -s)
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo:latest",
             "cpu": 0,
             "portMappings": [
@@ -210,25 +111,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
                     "awslogs-group": "/ecs/openems-deployment-new-td",
-=======
-                    "awslogs-group": "/ecs/openems-demo-td",
->>>>>>> 1451aa8 (commit -s)
-<<<<<<< HEAD
-=======
-                    "awslogs-group": "/ecs/openems-deployment-td",
->>>>>>> d20e115 (commit)
-=======
-                    "awslogs-group": "/ecs/openems-deployment-new-td",
->>>>>>> 5de1b83 (commit)
-=======
->>>>>>> 4bea6d0 (commit -s)
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -236,21 +119,7 @@
             "systemControls": []
         },
         {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
             "name": "openems-deployment-container-edge",
-=======
-            "name": "openems-demo-container-edge",
->>>>>>> 1451aa8 (commit -s)
-<<<<<<< HEAD
-=======
-            "name": "openems-deployment-container-edge",
->>>>>>> d20e115 (commit)
-=======
->>>>>>> 4bea6d0 (commit -s)
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-edge:latest",
             "cpu": 0,
             "portMappings": [],
@@ -261,25 +130,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
                     "awslogs-group": "/ecs/openems-deployment-new-td",
-=======
-                    "awslogs-group": "/ecs/openems-demo-td",
->>>>>>> 1451aa8 (commit -s)
-<<<<<<< HEAD
-=======
-                    "awslogs-group": "/ecs/openems-deployment-td",
->>>>>>> d20e115 (commit)
-=======
-                    "awslogs-group": "/ecs/openems-deployment-new-td",
->>>>>>> 5de1b83 (commit)
-=======
->>>>>>> 4bea6d0 (commit -s)
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -287,37 +138,10 @@
             "systemControls": []
         }
     ],
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
     "family": "openems-deployment-td",
     "executionRoleArn": "arn:aws:iam::470298448112:role/openems-deployment-ecs-task-execution-role",
     "networkMode": "awsvpc",
-    "revision": 2,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    "family": "openems-demo-td",
-    "executionRoleArn": "arn:aws:iam::470298448112:role/openems-demo-ecs-task-execution-role",
-=======
-    "family": "openems-deployment-td",
-    "executionRoleArn": "arn:aws:iam::470298448112:role/openems-deployment-ecs-task-execution-role",
->>>>>>> d20e115 (commit)
-    "networkMode": "awsvpc",
-    "revision": 51,
->>>>>>> 1451aa8 (commit -s)
-=======
->>>>>>> 5de1b83 (commit)
-=======
-=======
-    "family": "openems-demo-td",
-    "executionRoleArn": "arn:aws:iam::470298448112:role/openems-demo-ecs-task-execution-role",
-    "networkMode": "awsvpc",
-    "revision": 51,
->>>>>>> 1451aa8 (commit -s)
->>>>>>> 4bea6d0 (commit -s)
+    "revision": 4,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -360,21 +184,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
-    "registeredAt": "2024-03-31T15:28:46.692Z",
-=======
-    "registeredAt": "2024-03-27T07:54:03.622Z",
->>>>>>> 1451aa8 (commit -s)
-<<<<<<< HEAD
-=======
-    "registeredAt": "2024-03-31T15:28:46.692Z",
->>>>>>> 5de1b83 (commit)
-=======
->>>>>>> 4bea6d0 (commit -s)
+    "registeredAt": "2024-03-31T16:48:16.164Z",
     "registeredBy": "arn:aws:iam::470298448112:user/axm-bello",
     "tags": [
         {
@@ -383,21 +193,7 @@
         },
         {
             "key": "Environment",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4bea6d0 (commit -s)
             "value": "deployment"
-=======
-            "value": "demo"
->>>>>>> 1451aa8 (commit -s)
-<<<<<<< HEAD
-=======
-            "value": "deployment"
->>>>>>> d20e115 (commit)
-=======
->>>>>>> 4bea6d0 (commit -s)
         },
         {
             "key": "Automation",
