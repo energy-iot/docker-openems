@@ -193,6 +193,20 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
+    },
+    {
+      name      = "${var.project_name}-${var.environment}-container-edge"
+      image     = "${local.secrets.ecr_registry}/${var.image_name_openems_edge}:${var.image_tag}"
+      essential = false
+
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
+          "awslogs-region"        = "${var.region}",
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
     }
   ])
 }
