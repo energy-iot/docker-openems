@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:4",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:6",
     "containerDefinitions": [
         {
             "name": "openems-deployment-container-ui",
@@ -7,8 +7,8 @@
             "cpu": 0,
             "portMappings": [
                 {
-                    "containerPort": 8089,
-                    "hostPort": 8089,
+                    "containerPort": 80,
+                    "hostPort": 80,
                     "protocol": "tcp"
                 }
             ],
@@ -19,7 +19,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-deployment-new-td",
+                    "awslogs-group": "/ecs/openems-deployment-tds",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -65,7 +65,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-deployment-new-td",
+                    "awslogs-group": "/ecs/openems-deployment-tds",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -86,24 +86,16 @@
             "essential": false,
             "environment": [
                 {
-                    "name": "DB_NAME",
-                    "value": "openemsdb"
+                    "name": "USER",
+                    "value": "odoo"
                 },
                 {
-                    "name": "DB_HOST",
-                    "value": "applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
+                    "name": "PASSWORD",
+                    "value": "odoo16@2022"
                 },
                 {
-                    "name": "DB_PORT",
-                    "value": "5432"
-                },
-                {
-                    "name": "DB_USER",
-                    "value": "openems"
-                },
-                {
-                    "name": "DB_PASSWORD",
-                    "value": "openempassword"
+                    "name": "HOST",
+                    "value": "db"
                 }
             ],
             "mountPoints": [],
@@ -111,7 +103,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-deployment-new-td",
+                    "awslogs-group": "/ecs/openems-deployment-tds",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -119,18 +111,37 @@
             "systemControls": []
         },
         {
-            "name": "openems-deployment-container-edge",
-            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-edge:latest",
+            "name": "openems-deployment-container-odoo-db",
+            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo-db:latest",
             "cpu": 0,
-            "portMappings": [],
+            "portMappings": [
+                {
+                    "containerPort": 5433,
+                    "hostPort": 5433,
+                    "protocol": "tcp"
+                }
+            ],
             "essential": false,
-            "environment": [],
+            "environment": [
+                {
+                    "name": "POSTGRES_USER",
+                    "value": "odoo"
+                },
+                {
+                    "name": "POSTGRES_PASSWORD",
+                    "value": "odoo16@2022 "
+                },
+                {
+                    "name": "POSTGRES_DB",
+                    "value": "postgres"
+                }
+            ],
             "mountPoints": [],
             "volumesFrom": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/openems-deployment-new-td",
+                    "awslogs-group": "/ecs/openems-deployment-tds",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -141,7 +152,7 @@
     "family": "openems-deployment-td",
     "executionRoleArn": "arn:aws:iam::470298448112:role/openems-deployment-ecs-task-execution-role",
     "networkMode": "awsvpc",
-    "revision": 4,
+    "revision": 6,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -156,9 +167,6 @@
         },
         {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-        },
-        {
-            "name": "ecs.capability.increased-task-cpu-limit"
         },
         {
             "name": "ecs.capability.execution-role-ecr-pull"
@@ -178,13 +186,13 @@
     "requiresCompatibilities": [
         "FARGATE"
     ],
-    "cpu": "8192",
-    "memory": "20480",
+    "cpu": "4096",
+    "memory": "12288",
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-03-31T16:48:16.164Z",
+    "registeredAt": "2024-05-03T17:13:15.944Z",
     "registeredBy": "arn:aws:iam::470298448112:user/axm-bello",
     "tags": [
         {

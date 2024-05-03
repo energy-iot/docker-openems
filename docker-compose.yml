@@ -23,8 +23,10 @@ services:
       context: ./openems-edge
     image: openems-edge:latest
 
-db:
-    image: postgres:15
+  db:
+    build: 
+      context: ./odoo-database
+    image: odoo-db
     user: root
     environment:
       - POSTGRES_USER=odoo
@@ -34,8 +36,10 @@ db:
     volumes:
         - ./postgresql:/var/lib/postgresql/data
 
-odoo16:
-    image: odoo:16
+  odoo16:
+    build: 
+      context: ./odoo
+    image: odoo
     user: root
     depends_on:
       - db
