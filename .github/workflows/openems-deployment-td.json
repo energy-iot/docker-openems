@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:6",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:8",
     "containerDefinitions": [
         {
             "name": "openems-deployment-container-ui",
@@ -147,12 +147,31 @@
                 }
             },
             "systemControls": []
+        },
+        {
+            "name": "openems-deployment-container-edge",
+            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-edge:latest",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": false,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/openems-deployment-tds",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "systemControls": []
         }
     ],
     "family": "openems-deployment-td",
     "executionRoleArn": "arn:aws:iam::470298448112:role/openems-deployment-ecs-task-execution-role",
     "networkMode": "awsvpc",
-    "revision": 6,
+    "revision": 8,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -192,7 +211,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-05-03T17:13:15.944Z",
+    "registeredAt": "2024-05-03T20:46:02.998Z",
     "registeredBy": "arn:aws:iam::470298448112:user/axm-bello",
     "tags": [
         {
