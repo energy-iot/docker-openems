@@ -220,7 +220,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
-          container-name: openems-demo-container-odoo
+          container-name: openems-deployment-container-odoo
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest
 
       - name: Modify Amazon ECS task definition with forth container
@@ -228,13 +228,15 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
+          container-name: openems-deployment-container-odoo-db
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest
       
       - name: Modify Amazon ECS task definition with fifth container
         id: render-edge-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-odoo-db-container.outputs.task-definition }}
-          container-name: openems-demo-container-edge
+          container-name: openems-deployment-container-edge
           image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_6 }}:latest 
 
       - name: Deploy to Amazon ECS service
