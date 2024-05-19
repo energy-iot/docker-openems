@@ -1,4 +1,4 @@
-name: Deploy Pipeline
+name: Destroy Pipeline
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ env:
   IMAGE_NAME_VALUE_4: odoo
   IMAGE_NAME_VALUE_5: odoo-db
   IMAGE_NAME_VALUE_6: openems-edge
-  TERRAFORM_ACTION: apply
+  TERRAFORM_ACTION: destroy
   ECS_TD: .github/workflows/openems-deployment-td.json
   ECS_SERVICE: openems-deployment-service
   ECS_CLUSTER: openems-deployment-cluster
