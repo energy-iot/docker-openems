@@ -100,20 +100,20 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       }
     },
 
-    {
-      name      = "${var.project_name}-${var.environment}-container-backend-db"
-      image     = "${local.secrets.ecr_registry}/${var.image_name_openems_db}:${var.image_tag}"
-      essential = false
+    # {
+    #   name      = "${var.project_name}-${var.environment}-container-backend-db"
+    #   image     = "${local.secrets.ecr_registry}/${var.image_name_openems_db}:${var.image_tag}"
+    #   essential = false
 
-      logConfiguration = {
-        logDriver = "awslogs",
-        options = {
-          "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
-          "awslogs-region"        = "${var.region}",
-          "awslogs-stream-prefix" = "ecs"
-        }
-      }
-    },
+    #   logConfiguration = {
+    #     logDriver = "awslogs",
+    #     options = {
+    #       "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
+    #       "awslogs-region"        = "${var.region}",
+    #       "awslogs-stream-prefix" = "ecs"
+    #     }
+    #   }
+    # },
     {
       name      = "${var.project_name}-${var.environment}-container-odoo"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo}:${var.image_tag}"
@@ -121,24 +121,24 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
       environment = [
         {
-          name  = "DB_HOST",
-          value = "applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
+          name  = "HOST",
+          value = "db"
+        },
+        # {
+        #   name  = "DB_PORT",
+        #   value = "5432"
+        # },
+        # {
+        #   name  = "DB_NAME",
+        #   value = "openemsdb"
+        # },
+        {
+          name  = "USER",
+          value = "odoo"
         },
         {
-          name  = "DB_PORT",
-          value = "5432"
-        },
-        {
-          name  = "DB_NAME",
-          value = "openemsdb"
-        },
-        {
-          name  = "DB_USER",
-          value = "openems"
-        },
-        {
-          name  = "DB_PASSWORD",
-          value = "openempassword"
+          name  = "PASSWORD",
+          value = "odoo16@2022"
         }
       ]
 
@@ -162,6 +162,20 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       name      = "${var.project_name}-${var.environment}-container-odoo-db"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo_db}:${var.image_tag}"
       essential = false
+      environment = [
+        {
+          name  = "POSTGRES_USER",
+          value = "odoo"
+        },
+        {
+          name  = "POSTGRES_PASSWORD",
+          value = "odoo16@2022 "
+        },
+        {
+          name  = "POSTGRES_DB",
+          value = "postgres"
+        }
+      ]
 
       portMappings = [
         {
@@ -170,6 +184,20 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       ]
 
+
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
+          "awslogs-region"        = "${var.region}",
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+    },
+    {
+      name      = "${var.project_name}-${var.environment}-container-edge"
+      image     = "${local.secrets.ecr_registry}/${var.image_name_openems_edge}:${var.image_tag}"
+      essential = false
 
       logConfiguration = {
         logDriver = "awslogs",

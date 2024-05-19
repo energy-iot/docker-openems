@@ -57,10 +57,10 @@ variable "image_name_openems_backend" {
   type        = string
 }
 
-variable "image_name_openems_db" {
-  description = "the docker image name"
-  type        = string
-}
+# variable "image_name_openems_db" {
+#   description = "the docker image name"
+#   type        = string
+# }
 
 variable "image_name_odoo" {
   description = "the docker image name"
