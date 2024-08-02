@@ -138,7 +138,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         },
         {
           name  = "PASSWORD",
-          value = "odoo16@2022"
+          value = "odoo"
         }
       ]
 
@@ -169,7 +169,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         },
         {
           name  = "POSTGRES_PASSWORD",
-          value = "odoo16@2022 "
+          value = "odoo"
         },
         {
           name  = "POSTGRES_DB",

@@ -91,7 +91,7 @@
                 },
                 {
                     "name": "PASSWORD",
-                    "value": "odoo16@2022"
+                    "value": "odoo"
                 },
                 {
                     "name": "HOST",
@@ -129,7 +129,7 @@
                 },
                 {
                     "name": "POSTGRES_PASSWORD",
-                    "value": "odoo16@2022 "
+                    "value": "odoo"
                 },
                 {
                     "name": "POSTGRES_DB",
