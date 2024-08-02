@@ -42,7 +42,7 @@ services:
       - ./addons:/mnt/extra-addons
 
     restart: always             # run as a service
-    
+
   db:
     build: 
       context: ./odoo-database
@@ -55,6 +55,7 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - odoo-db-data:/var/lib/postgresql/data/pgdata
+    restart: always             # run as a service
 volumes:
   odoo-web-data:
   odoo-db-data:
