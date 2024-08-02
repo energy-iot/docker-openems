@@ -9,12 +9,12 @@ services:
     build: 
       context: ./openems-backend
     image: openems-backend:latest
-    environment:
-      DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
-      DB_PORT: "5432"
-      DB_NAME: openemsdb
-      DB_USER: openems
-      DB_PASSWORD: openemspassword
+    # environment:
+    #   DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
+    #   DB_PORT: "5432"
+    #   DB_NAME: openemsdb
+    #   DB_USER: openems
+    #   DB_PASSWORD: openemspassword
     # depends_on:
     #   - openems-database
 
