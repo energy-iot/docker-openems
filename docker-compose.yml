@@ -32,14 +32,17 @@ services:
       - db
     ports:
       - "8069:8069"
-    volumes:
-      - odoo-web-data:/var/lib/odoo
-      - ./config:/etc/odoo
-      - ./addons:/mnt/extra-addons
     environment:
       - HOST=db
       - USER=odoo
       - PASSWORD=odoo # Replace 'odoo-password' with your actual password
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+
+    restart: always             # run as a service
+    
   db:
     build: 
       context: ./odoo-database
