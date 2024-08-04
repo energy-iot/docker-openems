@@ -33,9 +33,9 @@ services:
     ports:
       - "8069:8069"
     environment:
-      - HOST=applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com
-      - USER=openems
-      - PASSWORD=openemspassword # Replace 'odoo-password' with your actual password
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo # Replace 'odoo-password' with your actual password
     volumes:
       - odoo-web-data:/var/lib/odoo
       - ./config:/etc/odoo
@@ -43,19 +43,19 @@ services:
 
     restart: always             # run as a service
 
-  # db:
-  #   build: 
-  #     context: ./odoo-database
-  #   image: odoo-db
-  #   user: root
-  #   environment:
-  #     - POSTGRES_DB=postgres
-  #     - POSTGRES_PASSWORD=odoo # Replace 'odoo-password' with your actual password
-  #     - POSTGRES_USER=odoo
-  #     - PGDATA=/var/lib/postgresql/data/pgdata
-  #   volumes:
-  #     - odoo-db-data:/var/lib/postgresql/data/pgdata
-  #   restart: always             # run as a service
+  db:
+    build: 
+      context: ./odoo-database
+    image: odoo-db
+    user: root
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo # Replace 'odoo-password' with your actual password
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    restart: always             # run as a service
 volumes:
   odoo-web-data:
   odoo-db-data:
