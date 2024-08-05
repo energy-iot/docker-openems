@@ -6,14 +6,6 @@ resource "aws_security_group" "openems_security_group" {
 
   ingress {
     description = "all traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "all traffic"
     from_port   = 8075
     to_port     = 8075
     protocol    = "tcp"

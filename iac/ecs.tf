@@ -59,29 +59,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       image     = "${local.secrets.ecr_registry}/${var.image_name_openems_backend}:${var.image_tag}"
       essential = false
 
-      environment = [
-        {
-          name  = "DB_HOST",
-          value = "applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
-        },
-        {
-          name  = "DB_PORT",
-          value = "5432"
-        },
-        {
-          name  = "DB_NAME",
-          value = "openemsdb"
-        },
-        {
-          name  = "DB_USER",
-          value = "openems"
-        },
-        {
-          name  = "DB_PASSWORD",
-          value = "openempassword"
-        }
-      ]
-
       portMappings = [
         {
           containerPort = 8075
@@ -122,7 +99,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       environment = [
         {
           name  = "HOST",
-          value = "db"
+          value = "odoo.clkigksc2ezs.us-east-1.rds.amazonaws.com"
         },
         # {
         #   name  = "DB_PORT",
@@ -134,7 +111,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         # },
         {
           name  = "USER",
-          value = "odoo"
+          value = "odoodb"
         },
         {
           name  = "PASSWORD",
@@ -148,42 +125,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           hostPort      = 8069
         }
       ]
-
-      logConfiguration = {
-        logDriver = "awslogs",
-        options = {
-          "awslogs-group"         = "${aws_cloudwatch_log_group.log_group.name}",
-          "awslogs-region"        = "${var.region}",
-          "awslogs-stream-prefix" = "ecs"
-        }
-      }
-    },
-    {
-      name      = "${var.project_name}-${var.environment}-container-odoo-db"
-      image     = "${local.secrets.ecr_registry}/${var.image_name_odoo_db}:${var.image_tag}"
-      essential = false
-      environment = [
-        {
-          name  = "POSTGRES_USER",
-          value = "odoo"
-        },
-        {
-          name  = "POSTGRES_PASSWORD",
-          value = "odoo"
-        },
-        {
-          name  = "POSTGRES_DB",
-          value = "postgres"
-        }
-      ]
-
-      portMappings = [
-        {
-          containerPort = 5433
-          hostPort      = 5433
-        }
-      ]
-
 
       logConfiguration = {
         logDriver = "awslogs",
