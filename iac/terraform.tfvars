@@ -17,7 +17,7 @@ image_name_openems_backend = "openems-backend"
 image_name_openems_edge = "openems-edge"
 # image_name_openems_db = "openems-db"
 image_name_odoo = "odoo"
-image_name_odoo_db = "odoo-db"
+# image_name_odoo_db = "odoo-db"
 image_tag    = "latest"
 
 

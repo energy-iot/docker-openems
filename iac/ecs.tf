@@ -99,7 +99,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       environment = [
         {
           name  = "HOST",
-          value = "odoo.clkigksc2ezs.us-east-1.rds.amazonaws.com"
+          value = "odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
         },
         # {
         #   name  = "DB_PORT",
@@ -111,7 +111,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         # },
         {
           name  = "USER",
-          value = "odoodb"
+          value = "odoo"
         },
         {
           name  = "PASSWORD",

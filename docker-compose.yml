@@ -26,12 +26,12 @@ services:
   odoo16:
     build: 
       context: ./odoo
-    image: odoo
+    image: odoo:latest
     ports:
       - "8069:8069"
     environment:
-      - HOST=odoo.clkigksc2ezs.us-east-1.rds.amazonaws.com
-      - USER=odoodb
+      - HOST=odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com
+      - USER=odoo
       - PASSWORD=Icui4cyou # Replace 'odoo-password' with your actual password
     volumes:
       - odoo-web-data:/var/lib/odoo

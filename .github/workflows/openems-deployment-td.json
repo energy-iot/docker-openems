@@ -65,11 +65,11 @@
             "environment": [
                 {
                     "name": "USER",
-                    "value": "odoo.clkigksc2ezs.us-east-1.rds.amazonaws.com"
+                    "value": "odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
                 },
                 {
                     "name": "PASSWORD",
-                    "value": "odoodb"
+                    "value": "odoo"
                 },
                 {
                     "name": "HOST",
