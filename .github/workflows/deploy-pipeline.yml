@@ -125,6 +125,8 @@ jobs:
 
       - name: Build an image from Docker Compose
         run: |
+          docker-compose verion
+          
           docker-compose build 
 
       - name: Run Trivy vulnerability scanner
