@@ -119,6 +119,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       ]
 
+      entrypoint = ["/entrypoint.sh"]
+
       portMappings = [
         {
           containerPort = 8069
