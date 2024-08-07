@@ -101,10 +101,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           name  = "HOST",
           value = "odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
         },
-        # {
-        #   name  = "DB_PORT",
-        #   value = "5432"
-        # },
+      
         # {
         #   name  = "DB_NAME",
         #   value = "openemsdb"
@@ -113,13 +110,19 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           name  = "USER",
           value = "odoo"
         },
+
+         {
+          name  = "PORT",
+          value = "5432"
+        },
+
         {
           name  = "PASSWORD",
-          value = "odoo"
+          value = "Icui4cyou"
         }
       ]
 
-      entrypoint = ["/entrypoint.sh"]
+      # entrypoint = ["/entrypoint.sh"]
 
       portMappings = [
         {

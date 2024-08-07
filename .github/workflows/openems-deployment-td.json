@@ -64,19 +64,22 @@
             "essential": false,
             "environment": [
                 {
-                    "name": "USER",
+                    "name": "HOST",
                     "value": "odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
                 },
                 {
-                    "name": "PASSWORD",
+                    "name": "USER",
                     "value": "odoo"
                 },
                 {
-                    "name": "HOST",
-                    "value": "db"
+                    "name": "PORT",
+                    "value": "5432"
+                },
+                {
+                    "name": "PASSWORD",
+                    "value": "Icui4cyou"
                 }
             ],
-            "entrypoint": ["/entrypoint.sh"],
             "mountPoints": [],
             "volumesFrom": [],
             "logConfiguration": {
