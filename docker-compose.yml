@@ -9,12 +9,12 @@ services:
     build: 
       context: ./openems-backend
     image: openems-backend:latest
-    environment:
-      DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
-      DB_PORT: "5432"
-      DB_NAME: openemsdb
-      DB_USER: openems
-      DB_PASSWORD: openemspassword
+    # environment:
+    #   DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
+    #   DB_PORT: "5432"
+    #   DB_NAME: openemsdb
+    #   DB_USER: openems
+    #   DB_PASSWORD: openemspassword
     # depends_on:
     #   - openems-database
 
@@ -22,45 +22,80 @@ services:
     build: 
       context: ./openems-edge
     image: openems-edge:latest
-
-  db:
-    build: 
-      context: ./odoo-database
-    image: odoo-db
-    user: root
-    environment:
-      - POSTGRES_USER=odoo
-      - POSTGRES_PASSWORD=odoo16@2022      
-      - POSTGRES_DB=postgres
-    restart: always             # run as a service
-    volumes:
-        - ./postgresql:/var/lib/postgresql/data
-
+  
   odoo16:
     build: 
       context: ./odoo
-    image: odoo
-    user: root
-    depends_on:
-      - db
+    image: odoo:latest
     ports:
-      - "10016:8069"
-      - "20016:8072" # live chat
-    tty: true
-    command: --
+      - "8069:8069"
     environment:
-      - HOST=db
+      - HOST=odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com
       - USER=odoo
-      - PASSWORD=odoo16@2022
+      - PORT=5432
+      - PASSWORD=Icui4cyou # Replace 'odoo-password' with your actual password
     volumes:
-      #- /etc/timezone:/etc/timezone:ro
-      #- /etc/localtime:/etc/localtime:ro
-      # - ./entrypoint.sh:/entrypoint.sh   # if you want to install additional Python packages, uncomment this line!
+      - odoo-web-data:/var/lib/odoo
+      - ./config:/etc/odoo
       - ./addons:/mnt/extra-addons
-      - ./etc:/etc/odoo
-    restart: always 
+    restart: always             # run as a service
 
+  # db:
+  #   build: 
+  #     context: ./odoo-database
+  #   image: odoo-db
+  #   user: root
+  #   environment:
+  #     - POSTGRES_DB=postgres
+  #     - POSTGRES_PASSWORD=odoo # Replace 'odoo-password' with your actual password
+  #     - POSTGRES_USER=odoo
+  #     - PGDATA=/var/lib/postgresql/data/pgdata
+  #   volumes:
+  #     - odoo-db-data:/var/lib/postgresql/data/pgdata
+  #   restart: always             # run as a service
+volumes:
+  odoo-web-data:
+  odoo-db-data:
+
+  # db:
+  #   build: 
+  #     context: ./odoo-database
+  #   image: odoo-db
+  #   user: root
+  #   environment:
+  #     - POSTGRES_USER=odoo
+  #     - POSTGRES_PASSWORD=odoo16@2022      
+  #     - POSTGRES_DB=postgres
+  #   restart: always             # run as a service
+  #   volumes:
+  #       - ./postgresql:/var/lib/postgresql/data
+
+  # odoo16:
+  #   build: 
+  #     context: ./odoo
+  #   image: odoo
+  #   user: root
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - "10016:8069"
+  #     - "20016:8072" # live chat
+  #   tty: true
+  #   command: --
+  #   environment:
+  #     - HOST=db
+  #     - USER=odoo
+  #     - PASSWORD=odoo16@2022
+  #   volumes:
+  #     #- /etc/timezone:/etc/timezone:ro
+  #     #- /etc/localtime:/etc/localtime:ro
+  #     # - ./entrypoint.sh:/entrypoint.sh   # if you want to install additional Python packages, uncomment this line!
+  #     - ./addons:/mnt/extra-addons
+  #     - ./etc:/etc/odoo
+  #   restart: always 
     
+  
+  
 
   # openems-database:
   #   build: 

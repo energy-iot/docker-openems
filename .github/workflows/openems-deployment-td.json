@@ -38,28 +38,6 @@
                 }
             ],
             "essential": false,
-            "environment": [
-                {
-                    "name": "DB_NAME",
-                    "value": "openemsdb"
-                },
-                {
-                    "name": "DB_HOST",
-                    "value": "applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
-                },
-                {
-                    "name": "DB_PORT",
-                    "value": "5432"
-                },
-                {
-                    "name": "DB_USER",
-                    "value": "openems"
-                },
-                {
-                    "name": "DB_PASSWORD",
-                    "value": "openempassword"
-                }
-            ],
             "mountPoints": [],
             "volumesFrom": [],
             "logConfiguration": {
@@ -83,57 +61,23 @@
                     "protocol": "tcp"
                 }
             ],
-            "essential": false,
+            "essential": true,
             "environment": [
+                {
+                    "name": "HOST",
+                    "value": "odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
+                },
                 {
                     "name": "USER",
                     "value": "odoo"
                 },
                 {
+                    "name": "PORT",
+                    "value": "5432"
+                },
+                {
                     "name": "PASSWORD",
-                    "value": "odoo16@2022"
-                },
-                {
-                    "name": "HOST",
-                    "value": "db"
-                }
-            ],
-            "mountPoints": [],
-            "volumesFrom": [],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": "/ecs/openems-deployment-tds",
-                    "awslogs-region": "us-east-1",
-                    "awslogs-stream-prefix": "ecs"
-                }
-            },
-            "systemControls": []
-        },
-        {
-            "name": "openems-deployment-container-odoo-db",
-            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo-db:latest",
-            "cpu": 0,
-            "portMappings": [
-                {
-                    "containerPort": 5433,
-                    "hostPort": 5433,
-                    "protocol": "tcp"
-                }
-            ],
-            "essential": false,
-            "environment": [
-                {
-                    "name": "POSTGRES_USER",
-                    "value": "odoo"
-                },
-                {
-                    "name": "POSTGRES_PASSWORD",
-                    "value": "odoo16@2022 "
-                },
-                {
-                    "name": "POSTGRES_DB",
-                    "value": "postgres"
+                    "value": "Icui4cyou"
                 }
             ],
             "mountPoints": [],
