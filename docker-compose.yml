@@ -32,7 +32,7 @@ services:
     environment:
       - HOST=odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com
       - USER=odoo
-      - Port=5432
+      - PORT=5432
       - PASSWORD=Icui4cyou # Replace 'odoo-password' with your actual password
     volumes:
       - odoo-web-data:/var/lib/odoo
