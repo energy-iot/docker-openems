@@ -94,7 +94,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     {
       name      = "${var.project_name}-${var.environment}-container-odoo"
       image     = "${local.secrets.ecr_registry}/${var.image_name_odoo}:${var.image_tag}"
-      essential = false
+      essential = true
 
       environment = [
         {

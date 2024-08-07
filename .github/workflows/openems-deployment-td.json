@@ -61,7 +61,7 @@
                     "protocol": "tcp"
                 }
             ],
-            "essential": false,
+            "essential": true,
             "environment": [
                 {
                     "name": "HOST",
