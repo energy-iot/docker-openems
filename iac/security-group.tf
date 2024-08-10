@@ -1,7 +1,7 @@
 # create security group for the application load balancer
 resource "aws_security_group" "openems_security_group" {
   name        = "${var.project_name}-${var.environment}-openems-sg"
-  description = "enable LL access on port 80/443"
+  description = "enable access on ports"
   vpc_id      = aws_vpc.vpc.id
 
   ingress {
@@ -14,8 +14,16 @@ resource "aws_security_group" "openems_security_group" {
 
   ingress {
     description = "all traffic"
-    from_port   = 8069
-    to_port     = 8069
+    from_port   = 8089
+    to_port     = 8089
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "all traffic"
+    from_port   = 8082
+    to_port     = 8082
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -30,8 +38,32 @@ resource "aws_security_group" "openems_security_group" {
 
   ingress {
     description = "all traffic"
+    from_port   = 8069
+    to_port     = 8069
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "all traffic"
+    from_port   = 8079
+    to_port     = 8079
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "all traffic"
     from_port   = 8087
     to_port     = 8087
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+ingress {
+    description = "all traffic"
+    from_port   = 8080
+    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -51,13 +83,13 @@ resource "aws_security_group" "openems_security_group" {
 # create security group for the database
 resource "aws_security_group" "database_security_group" {
   name        = "${var.project_name}-${var.environment}-database-sg"
-  description = "enable MySQL/Aurora access on port 3306 via app server sg"
+  description = "enable Postgres access on port 5432 via openems server sg"
   vpc_id      = aws_vpc.vpc.id
 
   ingress {
-    description     = "mysql/aurora access"
-    from_port       = 3306
-    to_port         = 3306
+    description     = "postgres/aurora access"
+    from_port       = 5432
+    to_port         = 5432
     protocol        = "tcp"
     security_groups = [aws_security_group.openems_security_group.id]
   }

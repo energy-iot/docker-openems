@@ -9,6 +9,8 @@ services:
     build: 
       context: ./openems-backend
     image: openems-backend:latest
+    ports:
+      - "8075:8075"
     # environment:
     #   DB_HOST: applicationdb.clkigksc2ezs.us-east-1.rds.amazonaws.com # Assumes the PostgreSQL service is named openems-database
     #   DB_PORT: "5432"
