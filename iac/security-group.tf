@@ -6,32 +6,8 @@ resource "aws_security_group" "openems_security_group" {
 
   ingress {
     description = "all traffic"
-    from_port   = 8075
-    to_port     = 8075
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "all traffic"
-    from_port   = 8089
-    to_port     = 8089
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "all traffic"
     from_port   = 8082
     to_port     = 8082
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "all traffic"
-    from_port   = 8086
-    to_port     = 8086
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -46,8 +22,24 @@ resource "aws_security_group" "openems_security_group" {
 
   ingress {
     description = "all traffic"
-    from_port   = 8079
-    to_port     = 8079
+    from_port   = 8086
+    to_port     = 8086
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "all traffic"
+    from_port   = 8089
+    to_port     = 8089
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "all traffic"
+    from_port   = 8080
+    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -60,10 +52,18 @@ resource "aws_security_group" "openems_security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "all traffic"
+    from_port   = 8075
+    to_port     = 8075
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 ingress {
     description = "all traffic"
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 8079
+    to_port     = 8079
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
