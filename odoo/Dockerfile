@@ -1,5 +1,6 @@
 # Use Odoo 16.0 as the base image
-FROM odoo:16.0
+
+FROM 470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo16.00:latest
 
 EXPOSE 8069
 
