@@ -28,7 +28,7 @@ secrets_manager_secret_name = "openems-demo-secret"
 # rds variables
 
 engine_type="postgres"
-engine_type_version="16.3"
+engine_type_version="18.1"
 multi_az_deployment="false"
 database_cluster_name="odoodb"
 master_username="odoo"
