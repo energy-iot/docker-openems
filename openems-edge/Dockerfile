@@ -1,5 +1,5 @@
 # Use an official Java runtime as a parent image
-FROM eclipse-temurin:17
+FROM eclipse-temurin:21
 
 # Set the working directory in the container
 WORKDIR /usr/lib/openems
