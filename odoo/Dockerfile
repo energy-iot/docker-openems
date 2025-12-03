@@ -2,6 +2,12 @@
 FROM odoo:16.0
 
 
-
-# Expose port 8069 for Odoo web interface
 EXPOSE 8069
+
+
+# COPY entrypoint.sh /entrypoint.sh
+# RUN chmod +x /entrypoint.sh
+
+
+# ENTRYPOINT ["/entrypoint.sh"]
+# CMD ["odoo"]
