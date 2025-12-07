@@ -1,0 +1,1 @@
+import{ga as n}from"./chunk-UEHZAF3Y.js";var p=(()=>{class t{transform(e,r){if(!e)return e;let s=[];for(let i in e)s.push({key:i,value:e[i]});return s}static{this.\u0275fac=function(r){return new(r||t)}}static{this.\u0275pipe=n({name:"keys",type:t,pure:!0,standalone:!1})}}return t})();export{p as a};
