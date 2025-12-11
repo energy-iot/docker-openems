@@ -8,8 +8,8 @@ RUN apt-get update
 RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common curl gnupg
 RUN curl -sL https://repos.influxdata.com/influxdb.key -o /etc/apt/trusted.gpg.d/influxdb.asc
 RUN add-apt-repository -y ppa:openjdk-r/ppa
-RUN apt-get install -y openjdk-17-jdk
-RUN apt-get install -y openjdk-17-jre
+RUN apt-get install -y openjdk-21-jdk
+RUN apt-get install -y openjdk-21-jre
 RUN apt-get install -y influxdb
 RUN update-alternatives --config java
 RUN update-alternatives --config javac
