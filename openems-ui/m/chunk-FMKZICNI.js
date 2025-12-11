@@ -1,0 +1,1 @@
+import{kf as t,mf as c}from"./chunk-UEHZAF3Y.js";var r;(function(e){e.METHOD="getPossibleApps";class n extends t{constructor(s){super(e.METHOD,s),this.params=s}}e.Request=n;class u extends c{constructor(s,o){super(s,o),this.id=s,this.result=o}}e.Response=u})(r||(r={}));export{r as a};
