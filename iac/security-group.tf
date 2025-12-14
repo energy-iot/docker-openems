@@ -93,6 +93,13 @@ resource "aws_security_group" "database_security_group" {
     protocol        = "tcp"
     security_groups = [aws_security_group.openems_security_group.id]
   }
+  ingress {
+    description     = "SSH db troubleshooting tunnel"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   egress {
     from_port   = 0
