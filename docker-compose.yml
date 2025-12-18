@@ -4,6 +4,8 @@ services:
     build: 
       context: ./openems-ui
     image: openems-ui:latest
+    ports:
+      - "4200:8089"
     
   openems-backend:
     build: 
@@ -15,6 +17,10 @@ services:
       DB_NAME: openemsdb
       DB_USER: openems
       DB_PASSWORD: openemspassword
+    ports:
+      - "8079:8079"
+      - "8081:8081"
+      - "8082:8082"
     # depends_on:
     #   - openems-database
 
@@ -22,6 +28,9 @@ services:
     build: 
       context: ./openems-edge
     image: openems-edge:latest
+    ports:
+      - "8080:8080"  # Edge Felix console
+      - "8085:8085"  # Edge Controller.Api.Websocket for UI
 
   db:
     build: 
