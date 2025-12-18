@@ -13,7 +13,7 @@ RUN apt-get install -y openjdk-21-jre
 RUN apt-get install -y influxdb
 RUN update-alternatives --config java
 RUN update-alternatives --config javac
-RUN chmod 777 ./openems-backend.sh
+RUN sed -i 's/\r$//' ./openems-backend.sh && chmod +x ./openems-backend.sh
 USER root
 EXPOSE 8075-8082
 EXPOSE 5432
