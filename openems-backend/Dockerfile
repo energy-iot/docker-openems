@@ -7,13 +7,18 @@ COPY openems-backend.sh ./
 RUN apt-get update
 RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common curl gnupg
 RUN curl -sL https://repos.influxdata.com/influxdb.key -o /etc/apt/trusted.gpg.d/influxdb.asc
-RUN add-apt-repository -y ppa:openjdk-r/ppa
+
+#RUN add-apt-repository -y ppa:openjdk-r/ppa
+
 RUN apt-get install -y openjdk-21-jdk
 RUN apt-get install -y openjdk-21-jre
 RUN apt-get install -y influxdb
-RUN update-alternatives --config java
-RUN update-alternatives --config javac
-RUN chmod 777 ./openems-backend.sh
+
+#RUN update-alternatives --config java
+#RUN update-alternatives --config javac
+
+#RUN chmod 777 ./openems-backend.sh
+RUN sed -i 's/\r$//' ./openems-backend.sh && chmod +x ./openems-backend.sh
 USER root
 EXPOSE 8075-8082
 EXPOSE 5432
