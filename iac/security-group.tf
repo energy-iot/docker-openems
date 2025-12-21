@@ -100,14 +100,14 @@ resource "aws_security_group" "database_security_group" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    prefix_list_ids = ["eiot_dev_ips"]
+    prefix_list_ids = ["pl-0e76da95670f38f5a"]
   }
   ingress {
     description     = "postgres remote troubleshooting"
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    prefix_list_ids = ["eiot_dev_ips"]
+    prefix_list_ids = ["pl-0e76da95670f38f5a"]
   }
 
   egress {
