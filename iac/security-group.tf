@@ -93,12 +93,21 @@ resource "aws_security_group" "database_security_group" {
     protocol        = "tcp"
     security_groups = [aws_security_group.openems_security_group.id]
   }
+  #prefix_list_ids are for IP whitelist via managed prefix list
+  # is it eiot_dev_ips or "pl-0e76da95670f38f5a"?
   ingress {
     description     = "SSH db troubleshooting tunnel"
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    prefix_list_ids = "eiot_dev_ips"
+  }
+  ingress {
+    description     = "postgres remote troubleshooting"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    prefix_list_ids = "eiot_dev_ips"
   }
 
   egress {
