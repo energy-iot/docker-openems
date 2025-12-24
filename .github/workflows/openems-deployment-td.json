@@ -62,6 +62,18 @@
                 }
             ],
             "essential": true,
+            "command": [
+                "odoo",
+                "-d",
+                "odoodb",
+                "-i",
+                "base",
+                "--db_host=odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com",
+                "--db_port=5432",
+                "--db_user=odoo",
+                "--db_password=Icui4cyou",
+                "--without-demo=all"
+            ],
             "environment": [
                 {
                     "name": "HOST",
