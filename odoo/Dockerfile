@@ -4,6 +4,9 @@ FROM odoo:16.0
 # Switch to root user to ensure we have permissions
 USER root
 
+COPY addons /mnt/extra-addons
+RUN chown -R odoo:odoo /mnt/extra-addons
+
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
