@@ -99,54 +99,51 @@ fi
 log "Starting all services..."
 docker compose up -d
 
-# ── Step 6: Wait for services to stabilize ────────────────────────────
-log "Waiting for services to start (20s)..."
-sleep 20
+# ── Step 6: Verify the stack (retry loop) ─────────────────────────────
+log "Waiting for services to start..."
 
-# ── Step 7: Verify the stack ──────────────────────────────────────────
+check_logs() {
+  local service="$1"
+  local pattern="$2"
+  local logs
+  logs=$(docker compose logs "$service" 2>/dev/null)
+  echo "$logs" | grep -q "$pattern"
+}
+
+CHECKS_PASSED=false
+for attempt in $(seq 1 12); do
+  sleep 10
+  PASS=true
+
+  check_logs openems-backend "Caching Edges.*finished" || PASS=false
+  check_logs openems-backend "InfluxDB"                || PASS=false
+  check_logs openems-edge    "Scheduler"               || PASS=false
+  check_logs openems-backend "Edge.Websocket"          || PASS=false
+
+  if [ "$PASS" = true ]; then
+    CHECKS_PASSED=true
+    break
+  fi
+  log "  Waiting... (${attempt}/12)"
+done
+
 log ""
 log "=== Verification ==="
-
-PASS=true
-
-# Backend → Postgres
-if docker compose logs openems-backend 2>&1 | grep -q "Caching Edges.*finished"; then
+if [ "$CHECKS_PASSED" = true ]; then
   log "  Backend -> Postgres:  OK"
-else
-  warn "  Backend -> Postgres:  NOT CONFIRMED (may need more time)"
-  PASS=false
-fi
-
-# Backend → InfluxDB
-if docker compose logs openems-backend 2>&1 | grep -q "InfluxDB"; then
   log "  Backend -> InfluxDB:  OK"
-else
-  warn "  Backend -> InfluxDB:  NOT CONFIRMED"
-  PASS=false
-fi
-
-# Edge → Scheduler
-if docker compose logs openems-edge 2>&1 | grep -q "Scheduler"; then
   log "  Edge scheduler:       OK"
-else
-  warn "  Edge scheduler:       NOT CONFIRMED"
-  PASS=false
-fi
-
-# Edge → Backend
-if docker compose logs openems-backend 2>&1 | grep -q "Edge.Websocket"; then
   log "  Edge -> Backend:      OK"
-else
-  warn "  Edge -> Backend:      NOT CONFIRMED (may need more time)"
-  PASS=false
-fi
-
-log ""
-if [ "$PASS" = true ]; then
+  log ""
   log "All checks passed!"
 else
-  warn "Some checks did not pass yet. Services may still be starting."
-  warn "Re-run verification: docker compose logs --tail=50 openems-backend openems-edge"
+  check_logs openems-backend "Caching Edges.*finished" && log "  Backend -> Postgres:  OK" || warn "  Backend -> Postgres:  FAILED"
+  check_logs openems-backend "InfluxDB"                && log "  Backend -> InfluxDB:  OK" || warn "  Backend -> InfluxDB:  FAILED"
+  check_logs openems-edge    "Scheduler"               && log "  Edge scheduler:       OK" || warn "  Edge scheduler:       FAILED"
+  check_logs openems-backend "Edge.Websocket"          && log "  Edge -> Backend:      OK" || warn "  Edge -> Backend:      FAILED"
+  log ""
+  warn "Some checks failed after 2 minutes."
+  warn "Check logs: docker compose logs --tail=50 openems-backend openems-edge"
 fi
 
 log ""
