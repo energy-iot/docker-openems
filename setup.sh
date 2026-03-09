@@ -30,6 +30,8 @@ done
 
 # Expected edge apikey — must match openems-edge/config.d/Controller/Api/Backend/*.config
 EDGE_APIKEY="E3SZ5xdJ2FJ0jPMtajdm"
+# Odoo password — must match openems-backend/config.d/Metadata/Odoo.config (odooPassword)
+ODOO_PASSWORD="Icui4cyou"
 
 # ── Step 1: Build images ─────────────────────────────────────────────
 if [ "$SKIP_BUILD" = false ]; then
@@ -72,6 +74,24 @@ else
     --stop-after-init
 
   log "Odoo database created and OpenEMS module installed."
+
+  # Set Odoo passwords to match backend Metadata/Odoo.config.
+  # The CLI creates admin with password 'admin', but the backend expects
+  # odooPassword for XML-RPC calls (used for UI user authentication).
+  log "Setting Odoo passwords to match backend config..."
+  docker compose up -d odoo16
+  sleep 5
+  docker compose exec -T odoo16 python3 -c "
+import xmlrpc.client
+url = 'http://localhost:8069'
+db = 'openems'
+uid = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common').authenticate(db, 'admin', 'admin', {})
+models = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/object')
+models.execute_kw(db, uid, 'admin', 'res.users', 'write', [[uid], {'password': '$ODOO_PASSWORD'}])
+models.execute_kw(db, uid, '$ODOO_PASSWORD', 'res.users', 'write', [[1], {'password': '$ODOO_PASSWORD'}])
+print('Odoo passwords updated')
+"
+  docker compose stop odoo16
 fi
 
 # ── Step 4: Verify edge device registration ───────────────────────────
@@ -98,6 +118,12 @@ fi
 # ── Step 5: Start the full stack ──────────────────────────────────────
 log "Starting all services..."
 docker compose up -d
+
+# The edge doesn't auto-reconnect quickly if it started before the backend
+# was ready. Restart it to ensure a clean connection.
+log "Restarting edge to ensure backend connection..."
+sleep 5
+docker compose restart openems-edge
 
 # ── Step 6: Verify the stack (retry loop) ─────────────────────────────
 log "Waiting for services to start..."
@@ -154,5 +180,5 @@ log "  Felix Console:   http://localhost:8080"
 log "  InfluxDB:        http://localhost:8086"
 log ""
 log "Default credentials:"
-log "  OpenEMS UI:  admin / admin"
-log "  Odoo:        admin / (set during DB creation, master pw: openemspassword)"
+log "  OpenEMS UI:  admin / Icui4cyou"
+log "  Odoo:        admin / Icui4cyou  (master pw: openemspassword)"
