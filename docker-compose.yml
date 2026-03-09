@@ -18,19 +18,45 @@ services:
       DB_USER: openems
       DB_PASSWORD: openemspassword
     ports:
+      - "8075:8075"
       - "8079:8079"
       - "8081:8081"
       - "8082:8082"
-    # depends_on:
-    #   - openems-database
+    depends_on:
+      influxdb:
+        condition: service_healthy
 
   openems-edge:
-    build: 
+    build:
       context: ./openems-edge
     image: openems-edge:latest
     ports:
       - "8080:8080"  # Edge Felix console
       - "8085:8085"  # Edge Controller.Api.Websocket for UI
+    volumes:
+      - ./openems-edge/config.d:/etc/openems.d
+
+  # InfluxDB — timedata persistence for the OpenEMS backend.
+  # Stores historical energy data (measurements, meter readings, etc.)
+  # in a named volume (influxdb-data) so data survives container restarts.
+  #
+  # Verify data is flowing:
+  #   curl http://localhost:8086/query --data-urlencode "q=SHOW MEASUREMENTS ON openemsdb"
+  influxdb:
+    image: influxdb:1.8
+    restart: unless-stopped
+    environment:
+      INFLUXDB_DB: openemsdb
+      INFLUXDB_HTTP_AUTH_ENABLED: "false"
+    ports:
+      - "127.0.0.1:8086:8086"
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+    healthcheck:
+      test: ["CMD", "influx", "-execute", "SHOW DATABASES"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   db:
     build: 
@@ -105,5 +131,5 @@ services:
 #       POSTGRES_DB: odoodb
 #     volumes:
 #       - odoo-db-data:/var/lib/postgresql/data
-# volumes:
-#   odoo-db-data:
+volumes:
+  influxdb-data:
