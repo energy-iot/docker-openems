@@ -115,7 +115,14 @@ else
   log "Edge device 'edge0' registered with correct apikey."
 fi
 
-# ── Step 5: Start the full stack ──────────────────────────────────────
+# ── Step 5: Verify required config files ──────────────────────────────
+if [ ! -f "openems-edge/config.d/Timedata/Rrd4j.config" ]; then
+  err "Missing openems-edge/config.d/Timedata/Rrd4j.config — Edge needs RRD4j for energy channel calculation"
+  exit 1
+fi
+log "RRD4j Timedata config verified."
+
+# ── Step 6: Start the full stack ──────────────────────────────────────
 log "Starting all services..."
 docker compose up -d
 
@@ -125,7 +132,7 @@ log "Restarting edge to ensure backend connection..."
 sleep 5
 docker compose restart openems-edge
 
-# ── Step 6: Verify the stack (retry loop) ─────────────────────────────
+# ── Step 7: Verify the stack (retry loop) ─────────────────────────────
 log "Waiting for services to start..."
 
 check_logs() {
