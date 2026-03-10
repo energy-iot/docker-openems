@@ -289,8 +289,8 @@ for i in $(seq 0 $((EDGE_COUNT - 1))); do
   if [ -z "$EDGE_KEY" ]; then
     warn "Edge device '${EDGE_NAME}' not found in database. Creating..."
     docker compose exec -T db psql -U odoo -d openems -c \
-      "INSERT INTO openems_device (name, apikey, comment, create_uid, create_date, write_uid, write_date)
-       VALUES ('${EDGE_NAME}', '${EDGE_APIKEY}', 'OpenEMS Edge #${i}', 1, NOW(), 1, NOW());"
+      "INSERT INTO openems_device (name, name_number, apikey, comment, active, create_uid, create_date, write_uid, write_date)
+       VALUES ('${EDGE_NAME}', ${i}, '${EDGE_APIKEY}', 'OpenEMS Edge #${i}', true, 1, NOW(), 1, NOW());"
     log "  ${EDGE_NAME} created with apikey ${EDGE_APIKEY}"
   elif [ "$EDGE_KEY" != "$EDGE_APIKEY" ]; then
     warn "Edge '${EDGE_NAME}' apikey mismatch: DB='${EDGE_KEY}', config='${EDGE_APIKEY}'"
