@@ -25,12 +25,14 @@ services:
     #   - openems-database
 
   openems-edge:
-    build: 
+    build:
       context: ./openems-edge
     image: openems-edge:latest
     ports:
       - "8080:8080"  # Edge Felix console
       - "8085:8085"  # Edge Controller.Api.Websocket for UI
+    volumes:
+      - ./openems-edge/config.d:/etc/openems.d
 
   db:
     build: 

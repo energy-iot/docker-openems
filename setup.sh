@@ -115,7 +115,14 @@ else
   log "Edge device 'edge0' registered with correct apikey."
 fi
 
-# ── Step 5: Start the full stack ──────────────────────────────────────
+# ── Step 5: Validate Edge config ──────────────────────────────────────
+if ! ls openems-edge/config.d/Timedata/Rrd4j/*.config 1>/dev/null 2>&1; then
+  err "Missing openems-edge/config.d/Timedata/Rrd4j/*.config — Edge needs RRD4j for energy channel calculation"
+  exit 1
+fi
+log "RRD4j Timedata config verified."
+
+# ── Step 6: Start the full stack ──────────────────────────────────────
 log "Starting all services..."
 docker compose up -d
 
@@ -125,7 +132,7 @@ log "Restarting edge to ensure backend connection..."
 sleep 5
 docker compose restart openems-edge
 
-# ── Step 6: Verify the stack (retry loop) ─────────────────────────────
+# ── Step 7: Verify the stack (retry loop) ─────────────────────────────
 log "Waiting for services to start..."
 
 check_logs() {
@@ -144,6 +151,7 @@ for attempt in $(seq 1 12); do
   check_logs openems-backend "Caching Edges.*finished" || PASS=false
   check_logs openems-backend "InfluxDB"                || PASS=false
   check_logs openems-edge    "Scheduler"               || PASS=false
+  check_logs openems-edge    "Rrd4j"                   || PASS=false
   check_logs openems-backend "Edge.Websocket"          || PASS=false
 
   if [ "$PASS" = true ]; then
@@ -159,6 +167,7 @@ if [ "$CHECKS_PASSED" = true ]; then
   log "  Backend -> Postgres:  OK"
   log "  Backend -> InfluxDB:  OK"
   log "  Edge scheduler:       OK"
+  log "  Edge RRD4j:           OK"
   log "  Edge -> Backend:      OK"
   log ""
   log "All checks passed!"
@@ -166,6 +175,7 @@ else
   check_logs openems-backend "Caching Edges.*finished" && log "  Backend -> Postgres:  OK" || warn "  Backend -> Postgres:  FAILED"
   check_logs openems-backend "InfluxDB"                && log "  Backend -> InfluxDB:  OK" || warn "  Backend -> InfluxDB:  FAILED"
   check_logs openems-edge    "Scheduler"               && log "  Edge scheduler:       OK" || warn "  Edge scheduler:       FAILED"
+  check_logs openems-edge    "Rrd4j"                   && log "  Edge RRD4j:           OK" || warn "  Edge RRD4j:           FAILED"
   check_logs openems-backend "Edge.Websocket"          && log "  Edge -> Backend:      OK" || warn "  Edge -> Backend:      FAILED"
   log ""
   warn "Some checks failed after 2 minutes."
