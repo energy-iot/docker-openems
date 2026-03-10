@@ -18,7 +18,7 @@ services:
       DB_USER: odoo
       DB_PASSWORD: Icui4cyou
     ports:
-      - "8075:8075"
+      - "8075:8075"  # B2B REST API (meter discovery)
       - "8079:8079"
       - "8081:8081"
       - "8082:8082"

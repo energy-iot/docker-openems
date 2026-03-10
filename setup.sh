@@ -57,7 +57,9 @@ EDGE_TEMPLATE_DIR="openems-edge/config.d"
 # ── Helper: generate random 20-char alphanumeric API key ──────────────
 generate_apikey() {
   # Matches Odoo model format: 20 chars from [a-zA-Z0-9]
-  LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 20
+  # Disable pipefail locally: head -c 20 closes the pipe early, causing tr to
+  # receive SIGPIPE (exit 141) which pipefail would treat as a failure.
+  (set +o pipefail; LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 20)
 }
 
 # ── Helper: portable in-place sed (macOS vs GNU) ─────────────────────
@@ -226,7 +228,7 @@ done
 log "Postgres is ready."
 
 # ── Step 3: Initialize Odoo database (if needed) ─────────────────────
-DB_EXISTS=$(docker compose exec -T db psql -U odoo -tAc \
+DB_EXISTS=$(docker compose exec -T db psql -U odoo -d postgres -tAc \
   "SELECT 1 FROM pg_database WHERE datname='openems'" 2>/dev/null || echo "")
 
 if [ "$DB_EXISTS" = "1" ]; then
@@ -247,8 +249,12 @@ else
   # odooPassword for XML-RPC calls (used for UI user authentication).
   log "Setting Odoo passwords to match backend config..."
   docker compose up -d odoo16
-  sleep 5
-  docker compose exec -T odoo16 python3 -c "
+
+  # Wait for Odoo to be ready for XML-RPC calls (can take 15-30s on first boot)
+  ODOO_READY=false
+  for odoo_attempt in $(seq 1 12); do
+    sleep 5
+    if docker compose exec -T odoo16 python3 -c "
 import xmlrpc.client
 url = 'http://localhost:8069'
 db = 'openems'
@@ -257,7 +263,18 @@ models = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/object')
 models.execute_kw(db, uid, 'admin', 'res.users', 'write', [[uid], {'password': '$ODOO_PASSWORD'}])
 models.execute_kw(db, uid, '$ODOO_PASSWORD', 'res.users', 'write', [[1], {'password': '$ODOO_PASSWORD'}])
 print('Odoo passwords updated')
-"
+" 2>/dev/null; then
+      ODOO_READY=true
+      break
+    fi
+    log "  Waiting for Odoo... (${odoo_attempt}/12)"
+  done
+
+  if [ "$ODOO_READY" = false ]; then
+    warn "Could not set Odoo password via XML-RPC after 60 seconds."
+    warn "You may need to set it manually: admin / admin → admin / $ODOO_PASSWORD"
+  fi
+
   docker compose stop odoo16
 fi
 
@@ -283,6 +300,22 @@ for i in $(seq 0 $((EDGE_COUNT - 1))); do
     log "  ${EDGE_NAME} apikey updated."
   else
     log "  ${EDGE_NAME} registered with correct apikey."
+  fi
+
+  # Assign admin user (uid 2) to this edge so it appears in the UI.
+  # The openems_device_user_role table links users to edges; without an entry
+  # the edge is connected but invisible to the user in the OpenEMS UI.
+  DEVICE_ID=$(docker compose exec -T db psql -U odoo -d openems -tAc \
+    "SELECT id FROM openems_device WHERE name='${EDGE_NAME}'" 2>/dev/null | tr -d '[:space:]')
+  if [ -n "$DEVICE_ID" ]; then
+    ROLE_EXISTS=$(docker compose exec -T db psql -U odoo -d openems -tAc \
+      "SELECT 1 FROM openems_device_user_role WHERE device_id=${DEVICE_ID} AND user_id=2" 2>/dev/null | tr -d '[:space:]')
+    if [ "$ROLE_EXISTS" != "1" ]; then
+      docker compose exec -T db psql -U odoo -d openems -c \
+        "INSERT INTO openems_device_user_role (device_id, user_id, role, create_uid, write_uid, create_date, write_date)
+         VALUES (${DEVICE_ID}, 2, 'admin', 1, 1, NOW(), NOW());" >/dev/null 2>&1
+      log "  ${EDGE_NAME} assigned to admin user."
+    fi
   fi
 done
 
