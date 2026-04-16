@@ -1,0 +1,12 @@
+# Copy to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored — do not commit personal IPs.
+
+allowed_ips = [
+  # "203.0.113.42/32",   # Alejandro (home) — replace with your actual IP
+  # "198.51.100.17/32",  # Aidan — replace with actual IP
+]
+
+# Override defaults if needed:
+# instance_type       = "t3.xlarge"   # if stack runs hot
+# edge_count          = 3
+# git_branch          = "local-deployment"
