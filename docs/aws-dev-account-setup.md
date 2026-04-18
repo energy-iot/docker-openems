@@ -38,8 +38,8 @@ Root Organization
 
 ### Account naming
 
-- **Account alias:** `energy-iot-dev`
-- **Email:** use a distribution/alias like `aws-dev@energy-iot.com` (NOT a personal email — rotation risk)
+- **Account alias:** `axm-ai-eiot-dev`
+- ~~**Email:**~~ not needed
 - **Account tag:** `Environment=dev`, `Owner=engineering`
 
 ---
@@ -52,7 +52,7 @@ These should be on from day one. Most are free or low-cost.
 |---------|---------|-------|
 | CloudTrail | Audit log of all API calls | Required. Free for management events. Enable in all regions. |
 | AWS Config | Resource inventory + compliance | Optional but recommended |
-| GuardDuty | Threat detection | Free 30-day trial, then ~$5/mo for a dev account |
+| ~~GuardDuty~~ | Threat detection service | not needed for dev scope ~~Free 30-day trial, then ~$5/mo for a dev account~~ |
 | IAM Identity Center (SSO) | Human login | Replaces individual IAM users for people |
 | AWS Budgets | Cost caps | Set a budget alert at $100/mo, hard alert at $500/mo |
 | Cost Explorer | Cost analysis | Free to enable |
@@ -196,25 +196,26 @@ Allowed: anything up to `*.4xlarge`, no metal, no GPU, no high-memory. For dev, 
 
 ### SCP 3: Require tags
 
-Every EC2 instance and RDS DB must have `Environment=dev` tag. This lets us use tag-based IAM conditions reliably.
-
+Running an EC2 instance and creating an RDS DB requires `Environment=aidev` tag. This lets us use tag-based IAM conditions reliably.
+#### AB - corrected to actually require an `Environment=aidev` tag/key pair and revised the description - WIP, still revising
+Null{} block inverts the condition of the enclosed statement
 ```json
 {
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Sid": "RequireEnvironmentTag",
-    "Effect": "Deny",
-    "Action": [
-      "ec2:RunInstances",
-      "rds:CreateDBInstance"
-    ],
-    "Resource": "*",
-    "Condition": {
-      "Null": {
-        "aws:RequestTag/Environment": "true"
-      }
-    }
-  }]
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "RequireEnvironmentTag",
+			"Effect": "Allow",
+			"Action": [
+				"ec2:RunInstances",
+				"rds:CreateDBInstance"
+			],
+			"Resource": "*",
+			"Condition": {
+				"StringEquals": {"aws:ResourceTag/Environment": "aidev"}
+			}
+		}
+	]
 }
 ```
 
