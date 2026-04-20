@@ -4,7 +4,7 @@ provider "aws" {
   default_tags {
     tags = {
       Project     = "openems"
-      Environment = "dev"
+      Environment = "aidev"
       ManagedBy   = "terraform"
       Component   = "openems-stack"
     }
