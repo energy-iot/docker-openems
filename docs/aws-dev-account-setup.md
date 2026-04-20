@@ -124,8 +124,9 @@ We will have a small number of long-lived IAM users for specific automation:
 
 | IAM user | Purpose | Permissions |
 |----------|---------|-------------|
-| `terraform-ci` | GitHub Actions deploy pipeline | PowerUserAccess + IAM for resources under `openems-dev-*` prefix |
-| `claude-code-dev` | Claude Code agent sessions | See Section 8 |
+| ~~`terraform-ci` ~~| ~~GitHub Actions deploy pipeline~~ | PowerUserAccess + IAM for resources under `openems-dev-*` prefix |
+| axm-bello | GitHub Actions deploy pipeline (pending migration) | |
+| `axm-ai-eiot-dev` | Claude Code agent sessions | See Section 8 |
 
 ### Service roles
 
@@ -221,7 +222,7 @@ Null{} block inverts the condition of the enclosed statement
 
 ### SCP 4: Protect CloudTrail
 
-Prevent anyone (including admins, including agents) from disabling audit logging.
+Prevent users with this policy from disabling audit logging.
 
 ```json
 {
@@ -252,7 +253,7 @@ A dedicated IAM user for agent sessions, scoped to the specific resources and op
 - **Revocable** — rotate or disable without affecting humans
 - **Bounded** — IAM policy is the ceiling; agent can never exceed it
 
-### Permissions for `claude-code-dev`
+### Permissions for `axm-ai-eiot-dev`
 
 **Managed policies:**
 - `AmazonEC2FullAccess`
