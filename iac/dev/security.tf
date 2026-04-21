@@ -53,3 +53,14 @@ resource "aws_security_group" "openems" {
     Name = "${var.project_name}-${var.environment}-stack-sg"
   }
 }
+
+# Allow Lambda proxy to reach the OpenEMS B2B port via SG-to-SG reference
+resource "aws_security_group_rule" "openems_from_lambda_b2b" {
+  description              = "OpenEMS B2B REST from Lambda proxy"
+  type                     = "ingress"
+  from_port                = 8082
+  to_port                  = 8082
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.lambda_proxy.id
+  security_group_id        = aws_security_group.openems.id
+}

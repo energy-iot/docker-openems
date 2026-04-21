@@ -51,3 +51,9 @@ variable "edge_count" {
   description = "Number of simulated edges to bootstrap"
   default     = 2
 }
+
+variable "openems_b2b_creds" {
+  type        = string
+  description = "Base64-encoded Basic auth credentials for the OpenEMS B2B REST API. Generate with: echo -n 'user:password' | base64"
+  sensitive   = true
+}
