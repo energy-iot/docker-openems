@@ -203,9 +203,16 @@ done
 generate_compose_override
 
 # ── Step 1: Build images ─────────────────────────────────────────────
+# Use -f docker-compose.yml explicitly: the override generated above
+# disables `openems-edge` (profile "disabled") so it can be replaced
+# with N `openems-edge-0..N-1` services that reference the image by
+# tag without a build. Without -f, `docker compose build` honors the
+# override and skips building openems-edge entirely, so when the
+# edge-N services try to start they fail with "pull access denied
+# for openems-edge" (the image doesn't exist locally).
 if [ "$SKIP_BUILD" = false ]; then
   log "Building Docker images..."
-  docker compose build
+  docker compose -f docker-compose.yml build
 else
   log "Skipping build (--skip-build)"
 fi
