@@ -42,6 +42,8 @@ chmod +x setup.sh
 }
 
 echo "[bootstrap] Completed at $(date)"
-echo "[bootstrap] UI:    http://$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4):4200"
-echo "[bootstrap] B2B:   http://$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4):8082"
-echo "[bootstrap] Odoo:  http://$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4):10016"
+TOKEN=$(curl -sSf -X PUT -H "X-aws-ec2-metadata-token-ttl-seconds: 60" http://169.254.169.254/latest/api/token)
+PUB_IP=$(curl -sSf -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)
+echo "[bootstrap] UI:    http://$PUB_IP:4200"
+echo "[bootstrap] B2B:   http://$PUB_IP:8075"
+echo "[bootstrap] Odoo:  http://$PUB_IP:10016"
