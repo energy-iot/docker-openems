@@ -8,13 +8,12 @@ terraform {
     }
   }
 
-  # Reuses the existing state bucket used by iac/ — different key for isolation.
-  # The bucket and lock table already exist in the AWS account.
+  # State bucket and lock table provisioned by admin in the EIOT dev account.
   backend "s3" {
-    bucket         = "openems-deployment-tf-state-file"
+    bucket         = "docker-openems-feature-dev-iac"
     key            = "iac/dev/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "terraform-state-lock-openems-deployment"
+    dynamodb_table = "docker-openems-feature-dev-iac-state-lock"
     encrypt        = true
   }
 }
