@@ -26,9 +26,16 @@ Ports exposed to `allowed_ips`:
 
 ```bash
 cd iac/dev
+
+# Backend config (S3 bucket + DynamoDB table names from your cloud admin)
+cp backend.tfvars.example backend.tfvars
+# Edit backend.tfvars — fill in bucket and dynamodb_table
+
+# Variables (IPs, instance type, etc.)
 cp terraform.tfvars.example terraform.tfvars
 # Edit terraform.tfvars — add your IPs to allowed_ips
-terraform init
+
+terraform init -backend-config=backend.tfvars
 terraform plan
 terraform apply
 ```

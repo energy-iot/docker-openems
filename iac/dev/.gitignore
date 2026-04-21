@@ -1,4 +1,5 @@
 terraform.tfvars
+backend.tfvars
 .terraform/
 .terraform.lock.hcl
 *.tfstate
