@@ -8,12 +8,9 @@ terraform {
     }
   }
 
-  # State bucket and lock table provisioned by admin in the EIOT dev account.
+  # Backend configured via: terraform init -backend-config=backend.tfvars
+  # See backend.tfvars.example for required values.
   backend "s3" {
-    bucket         = "docker-openems-feature-dev-iac"
-    key            = "iac/dev/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "docker-openems-feature-dev-iac-state-lock"
-    encrypt        = true
+    # All values provided at init time — not committed to the public repo.
   }
 }
