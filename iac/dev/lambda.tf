@@ -46,11 +46,11 @@ resource "aws_security_group" "lambda_proxy" {
   vpc_id      = aws_vpc.main.id
 
   egress {
-    description              = "OpenEMS B2B REST"
-    from_port                = 8082
-    to_port                  = 8082
-    protocol                 = "tcp"
-    source_security_group_id = aws_security_group.openems.id
+    description     = "OpenEMS B2B REST"
+    from_port       = 8082
+    to_port         = 8082
+    protocol        = "tcp"
+    security_groups = [aws_security_group.openems.id]
   }
 
   tags = {
