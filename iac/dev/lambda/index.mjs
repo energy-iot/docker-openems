@@ -5,7 +5,7 @@ export async function handler(event) {
 
   try {
     const response = await fetch(
-      `http://${process.env.OPENEMS_HOST}:8082/jsonrpc`,
+      `http://${process.env.OPENEMS_HOST}:8075/jsonrpc`,
       {
         method: 'POST',
         headers: {

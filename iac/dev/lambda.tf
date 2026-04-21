@@ -47,8 +47,8 @@ resource "aws_security_group" "lambda_proxy" {
 
   egress {
     description     = "OpenEMS B2B REST"
-    from_port       = 8082
-    to_port         = 8082
+    from_port       = 8075
+    to_port         = 8075
     protocol        = "tcp"
     security_groups = [aws_security_group.openems.id]
   }
@@ -63,11 +63,11 @@ resource "aws_security_group" "lambda_proxy" {
 # ---------------------------------------------------------------------------
 
 resource "aws_lambda_function" "proxy" {
-  function_name = "${var.project_name}-${var.environment}-b2b-proxy"
-  role          = aws_iam_role.lambda_proxy.arn
-  runtime       = "nodejs20.x"
-  handler       = "index.handler"
-  filename      = data.archive_file.lambda_proxy.output_path
+  function_name    = "${var.project_name}-${var.environment}-b2b-proxy"
+  role             = aws_iam_role.lambda_proxy.arn
+  runtime          = "nodejs20.x"
+  handler          = "index.handler"
+  filename         = data.archive_file.lambda_proxy.output_path
   source_code_hash = data.archive_file.lambda_proxy.output_base64sha256
 
   memory_size = 128
@@ -80,8 +80,8 @@ resource "aws_lambda_function" "proxy" {
 
   environment {
     variables = {
-      OPENEMS_HOST       = aws_instance.openems.private_ip
-      OPENEMS_B2B_CREDS  = var.openems_b2b_creds
+      OPENEMS_HOST      = aws_instance.openems.private_ip
+      OPENEMS_B2B_CREDS = var.openems_b2b_creds
     }
   }
 

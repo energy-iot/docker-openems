@@ -14,8 +14,13 @@ output "ui_url" {
 }
 
 output "b2b_url_direct" {
-  description = "OpenEMS B2B REST endpoint — direct public IP access (for debugging; keep allowed_ips locked down)"
-  value       = "http://${aws_instance.openems.public_ip}:8082"
+  description = "OpenEMS B2B REST (JSON-RPC) endpoint — direct public IP access (for debugging; keep allowed_ips locked down)"
+  value       = "http://${aws_instance.openems.public_ip}:8075"
+}
+
+output "ui_backend_ws_url" {
+  description = "OpenEMS UI ↔ Backend WebSocket (browser connects here from the UI at :4200)"
+  value       = "ws://${aws_instance.openems.public_ip}:8082"
 }
 
 output "b2b_url_lambda" {

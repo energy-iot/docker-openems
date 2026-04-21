@@ -10,8 +10,9 @@ Single-EC2 deployment of the OpenEMS stack for development. Isolated from the pr
 - IAM role for SSM Session Manager (no SSH key required)
 
 Ports exposed to `allowed_ips`:
-- `4200` — OpenEMS UI
-- `8082` — OpenEMS Backend B2B REST (for MBE)
+- `4200` — OpenEMS UI (nginx)
+- `8082` — OpenEMS UI ↔ Backend WebSocket (browser connects here from the UI)
+- `8075` — OpenEMS Backend B2B REST (JSON-RPC, used by MBE / Lambda proxy)
 - `10016` — Odoo
 - `8086` — InfluxDB HTTP (debugging)
 

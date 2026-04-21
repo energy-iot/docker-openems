@@ -12,11 +12,20 @@ resource "aws_security_group" "openems" {
     cidr_blocks = var.allowed_ips
   }
 
-  # OpenEMS Backend B2B REST (used by MBE)
+  # OpenEMS UI ↔ Backend WebSocket (browser connects from UI at :4200)
   ingress {
-    description = "OpenEMS Backend B2B REST"
+    description = "OpenEMS UI Backend WebSocket"
     from_port   = 8082
     to_port     = 8082
+    protocol    = "tcp"
+    cidr_blocks = var.allowed_ips
+  }
+
+  # OpenEMS Backend B2B REST (used by MBE direct access; Lambda uses SG-to-SG rule)
+  ingress {
+    description = "OpenEMS Backend B2B REST"
+    from_port   = 8075
+    to_port     = 8075
     protocol    = "tcp"
     cidr_blocks = var.allowed_ips
   }
@@ -54,12 +63,12 @@ resource "aws_security_group" "openems" {
   }
 }
 
-# Allow Lambda proxy to reach the OpenEMS B2B port via SG-to-SG reference
+# Allow Lambda proxy to reach the OpenEMS B2B REST port via SG-to-SG reference
 resource "aws_security_group_rule" "openems_from_lambda_b2b" {
   description              = "OpenEMS B2B REST from Lambda proxy"
   type                     = "ingress"
-  from_port                = 8082
-  to_port                  = 8082
+  from_port                = 8075
+  to_port                  = 8075
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.lambda_proxy.id
   security_group_id        = aws_security_group.openems.id
