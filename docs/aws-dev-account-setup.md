@@ -275,7 +275,7 @@ A dedicated IAM user for agent sessions, scoped to the specific resources and op
         "iam:PutRolePolicy", "iam:DeleteRolePolicy", "iam:GetRolePolicy", "iam:ListRolePolicies",
         "iam:CreateInstanceProfile", "iam:DeleteInstanceProfile", "iam:GetInstanceProfile",
         "iam:AddRoleToInstanceProfile", "iam:RemoveRoleFromInstanceProfile",
-        "iam:PassRole"
+        "iam:PassRole", "iam:ListInstanceProfilesForRole"
       ],
       "Resource": [
         "arn:aws:iam::<ACCOUNT_ID>:role/openems-dev-*",
