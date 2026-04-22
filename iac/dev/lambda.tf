@@ -141,12 +141,18 @@ resource "aws_iam_user_policy" "mbe_invoker_invoke" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect   = "Allow"
-      Action   = "lambda:InvokeFunctionUrl"
+      Effect = "Allow"
+      Action = [
+        "lambda:InvokeFunctionUrl",
+        "lambda:InvokeFunction",
+      ]
       Resource = aws_lambda_function.proxy.arn
       Condition = {
         StringEquals = {
           "lambda:FunctionUrlAuthType" = "AWS_IAM"
+        }
+        Bool = {
+          "lambda:InvokedViaFunctionUrl" = "true"
         }
       }
     }]
