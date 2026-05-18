@@ -296,6 +296,8 @@ Simulation edges remain as Docker containers in the ECS task definition. They:
 | Edge Pi → Backend | Yes | OpenVPN encrypts the tunnel (AES-256-GCM) |
 | Backend → RDS | Yes | RDS enforces TLS by default |
 
+> **Dev env exception:** `iac/dev/` currently exposes UI (4200), Odoo (10016), B2B REST (8075), and the UI↔Backend WebSocket (8082) over **plain HTTP** to IP-allowlisted developers. This was an explicit scope decision in PR #71 (MVP dev env). The Lambda Function URL (MBE→OpenEMS proxy) is HTTPS via AWS-managed TLS. See Open Question 9 below.
+
 ---
 
 ## 6. Data Flow
@@ -447,6 +449,16 @@ These need team input before finalizing:
 7. **OpenVPN server HA?** Single EC2 instance is a single point of failure. If it goes down, all field edges lose backend connectivity (they continue collecting locally via RRD4j). Is this acceptable for MVP, or do we need a standby?
 
 8. **MBE on Vercel vs AWS?** Moving MBE to AWS adds infra complexity. Alternative: keep MBE on Vercel and expose the B2B endpoint through API Gateway with API key auth + TLS. Less secure (public endpoint) but simpler. Team preference?
+
+9. **HTTPS for the dev environment?** The `iac/dev/` stack currently exposes UI, Odoo, B2B REST, and the UI↔Backend WebSocket over plain HTTP to IP-allowlisted developers. Dev-only creds flow in the clear (Basic auth, Odoo session cookies). This was deferred as a scope call in PR #71, but surfaced during the 2026-04-21 stack validation — worth a team discussion before it becomes normalized practice. Options:
+   - **A. Accept HTTP for dev-only** — zero cost, relies on allowlist; bakes a bad norm as the env outlives the pilot
+   - **B. Self-signed cert + nginx TLS** — ~30 min, zero cost, every visit triggers a browser warning
+   - **C. Caddy sidecar + Let's Encrypt** — ~1 hr, needs a DNS name (e.g., `openems-dev.<our-domain>`), clean browser UX
+   - **D. ALB + ACM cert** — ~2 hr, ~$16/mo for ALB + $12/yr for domain, matches prod pattern exactly, gives us health checks and logging for free
+   
+   **Decision factors:** will dev env carry any non-synthetic tenant data? Does it stay up between pilot sessions? Who owns the renewal + cert/DNS management? Option D is the "right" answer if dev env becomes persistent; Option A is defensible only if dev env is strictly ephemeral + IP-scoped.
+   
+   **Owner: TBD** — needs assignment before Phase 1 dev-env hardening.
 
 ---
 
