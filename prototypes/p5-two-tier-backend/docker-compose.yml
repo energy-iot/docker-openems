@@ -1,0 +1,60 @@
+# P5-A — the NEWER two-tier OpenEMS backend (2026.6.0), to reproduce the issues
+# a client hit with Metadata.File + Timedata.InfluxDB + directly-connected edges
+# (the four pending OpenEMS PRs #3795-3798). Kept fully isolated from the P1-P4
+# stack: own network, own container names, non-conflicting host ports.
+#
+#   docker compose up -d          # brings up gateway + backend + influx + a sim edge
+services:
+  # --- persistence (same stack as P1) ---
+  p5-influxdb:
+    image: influxdb:2.7-alpine
+    container_name: p5-influxdb
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: openems
+      DOCKER_INFLUXDB_INIT_PASSWORD: openems-admin-pw
+      DOCKER_INFLUXDB_INIT_ORG: openems.io
+      DOCKER_INFLUXDB_INIT_BUCKET: openems
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: openems-p5-dev-token
+    volumes:
+      - p5-influxdb-data:/var/lib/influxdb2
+    restart: unless-stopped
+
+  # --- TIER 2: the main backend (edge.manager :8093 + metadata + timedata + ui) ---
+  openems-backend:                       # network alias used by the gateway uri
+    image: openems/backend:2026.6.0
+    container_name: p5-openems-backend
+    depends_on: [p5-influxdb]
+    volumes:
+      - ./backend-config:/var/opt/openems/config:rw    # our config (non-empty → image skips seeding)
+      - ./metadata.json:/var/opt/openems/metadata.json:ro
+    ports:
+      - "18079:8079"   # Felix console
+      - "18082:8082"   # UI websocket
+    restart: unless-stopped
+
+  # --- TIER 1: the edge-facing gateway (Backend.Edge.App :8081 → manager :8093) ---
+  openems-backend-edge:                  # network alias used by the sim edge
+    image: openems/backend-edge:2026.6.0
+    container_name: p5-openems-backend-edge
+    depends_on: [openems-backend]
+    volumes:
+      - ./edge-config:/var/opt/openems/config:rw
+    ports:
+      - "18078:8078"   # Felix console
+      - "18081:8081"   # Edge websocket (edges connect here)
+    restart: unless-stopped
+
+  # --- a simulated edge (reuses the P1 edge image) pointed at the GATEWAY ---
+  p5-sim-edge:
+    image: openems-edge:2026.6.0
+    container_name: p5-sim-edge
+    depends_on: [openems-backend-edge]
+    environment:
+      EDGE_ID: "p5edge-01"
+      EDGE_DEBUG: "true"
+      BACKEND_URI: "ws://openems-backend-edge:8081"
+    restart: unless-stopped
+
+volumes:
+  p5-influxdb-data:
