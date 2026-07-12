@@ -20,6 +20,42 @@ needed in-cloud, as a separate non-prod stack.
 
 ---
 
+## Current account state (verified 2026-07-12, read-only recon)
+
+Account `470298448112` (profile `openems`, IAM user `axm-iot-ai-dev` — near
+read-blind: ec2/logs/cloudwatch/elbv2 reads allowed; ecs/ecr/rds/s3-list/
+dynamodb/iam/secretsmanager denied).
+
+**The ECS "production" stack described by `iac/` has never been deployed
+here** (or was fully torn down):
+
+- Terraform state bucket `openems-deployment-tf-state-file` → `NoSuchBucket`
+- No `openems-deployment-vpc`, no `/ecs/openems-deployment-tds` log group,
+  no load balancers
+
+What actually exists:
+
+| Resource | State | Origin |
+|---|---|---|
+| `openems-dev-stack` EC2 (t3.large, `openems-dev-vpc` 10.100.0.0/16) | **running** | `feature/dev-iac` → `iac/dev/`: single EC2, cloud-init clones this repo and runs `setup.sh` (full compose stack); SG scoped to `allowed_ips`; SSM access, no SSH |
+| `openems-dev-b2b-proxy` Lambda | exists | `feature/lambda-proxy` |
+| `openems-backup`, `openems-backup-arm64`, `apis-server-all` EC2 | stopped | — |
+| FlexMeasures VPC/clusters | running | separate project, same account |
+
+Implications for this plan:
+
+1. **There is no live production to break** — PR-A is a first-time bootstrap
+   of the ECS stack, not a migration.
+2. **CI cannot deploy today**: the deploy pipeline's `terraform init` targets
+   the nonexistent state bucket and fails at step one. PR-A gains a
+   one-time **bootstrap prerequisite**: create the state bucket + DynamoDB
+   lock table (+ the `openems-demo-secret` referenced by `data-source.tf`),
+   and confirm the repo's AWS secrets are valid with sufficient permissions
+   (or move to OIDC and grant the role).
+3. The **dev EC2 pattern** (`iac/dev` + `setup.sh`) is today's only working
+   deployment and stays the dev environment; this plan's ECS stack is the
+   production counterpart.
+
 ## Standing architecture decisions
 
 These hold across all PRs; each lands in the PR where it becomes relevant.
