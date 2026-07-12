@@ -9,35 +9,19 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: us-east-1
-  IMAGE_NAME_VALUE_1: openems-ui 
-  IMAGE_NAME_VALUE_2: openems-backend
-  # IMAGE_NAME_VALUE_3: openems-db
-  IMAGE_NAME_VALUE_4: odoo
-  # IMAGE_NAME_VALUE_5: odoo-db
-  IMAGE_NAME_VALUE_6: openems-edge
-  TERRAFORM_ACTION: apply
+  # The three images that make up the AWS stack. Edges are NOT deployed to
+  # AWS — they run in the field (or locally for dev) and connect in.
+  IMAGE_NAME_UI: openems-ui
+  IMAGE_NAME_BACKEND: openems-backend
+  IMAGE_NAME_ODOO: odoo
   ECS_TD: .github/workflows/openems-deployment-td.json
   ECS_SERVICE: openems-deployment-service
   ECS_CLUSTER: openems-deployment-cluster
 
-
 jobs:
-  # Configure AWS credentials 
-  configure_aws_credentials:
-    name: Configure AWS credentials
-    runs-on: ubuntu-latest
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-  
-   # Build AWS infrastructure
+  # Build AWS infrastructure
   deploy_aws_infrastructure:
     name: Build AWS infrastructure
-    needs: configure_aws_credentials
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -52,69 +36,37 @@ jobs:
         working-directory: ./iac
         run: terraform init
 
-      - name: Run Terraform apply/destroy
+      - name: Run Terraform apply
         working-directory: ./iac
-        run: terraform ${{ env.TERRAFORM_ACTION }} -auto-approve        
+        run: terraform apply -auto-approve
 
-  # Create ECR repository
+  # Create ECR repositories if missing
   create_ecr_repository:
-    name: Create ECR repository
-    needs: 
-      - deploy_aws_infrastructure     
-      - configure_aws_credentials
-    if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy'  
+    name: Create ECR repositories
+    needs:
+      - deploy_aws_infrastructure
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Check if ECR repositories exist
-        env:
-          # List your repository names here  
-          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_6 }}' 
-        run: |
-          IFS=',' read -ra REPOS <<< "$REPO_NAMES"
-          for repo in "${REPOS[@]}"; do
-            echo "Checking repository: $repo"
-            result=$(aws ecr describe-repositories --repository-names "$repo" 2>/dev/null | jq -r '.repositories[0]?.repositoryName // empty')
-            if [[ -z "$result" ]]; then
-              echo "Repository $repo does not exist."
-            else
-              echo "Repository $repo exists."
-              echo "repo_name_$repo=$result" >> $GITHUB_ENV
-            fi
-          done
-        continue-on-error: true
-
       - name: Create ECR repositories
         env:
-          # List your repository names here  
-          REPO_NAMES: '${{ env.IMAGE_NAME_VALUE_1 }},${{ env.IMAGE_NAME_VALUE_2 }},${{ env.IMAGE_NAME_VALUE_4 }},${{ env.IMAGE_NAME_VALUE_6 }}' 
+          REPO_NAMES: '${{ env.IMAGE_NAME_UI }},${{ env.IMAGE_NAME_BACKEND }},${{ env.IMAGE_NAME_ODOO }}'
         run: |
           IFS=',' read -ra REPOS <<< "$REPO_NAMES"
           for repo in "${REPOS[@]}"; do
-            echo "Creating repository: $repo"
-            if ! aws ecr describe-repositories --repository-names "$repo" 2>/dev/null; then
+            if aws ecr describe-repositories --repository-names "$repo" >/dev/null 2>&1; then
+              echo "Repository $repo already exists."
+            else
               aws ecr create-repository --repository-name "$repo"
               echo "Repository $repo created."
-            else
-              echo "Repository $repo already exists."
             fi
           done
-        #  aws ecr put-registry-scanning-configuration \
-        #     --scan-type ENHANCED \
-        #      --rules '["scanFrequency" : "SCAN_ON_PUSH"]' \
-        #      --region ${{ env.AWS_REGION }}
-      
-    # Build Docker Image
 
+  # Build, scan and push Docker images
   build_scan_push:
-    name: Build, Scan and push Docker image to ECR
-    needs:  
-      - configure_aws_credentials
+    name: Build, scan and push Docker images to ECR
+    needs:
       - deploy_aws_infrastructure
       - create_ecr_repository
-    if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy'  
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -123,133 +75,77 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      # - name: Set up Docker Buildx
-      #   uses: docker/setup-buildx-action@v2 
-
-      # - name: Install Docker Compose
-      #   run: |
-      #     curl -L "https://github.com/docker/compose/releases/download/2.20.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-      #     chmod +x /usr/local/bin/docker-compose
-
-      - name: Build an image from Docker Compose
+      - name: Build images from Docker Compose
         run: |
-          docker compose build 
+          docker compose build ${{ env.IMAGE_NAME_UI }} ${{ env.IMAGE_NAME_BACKEND }} odoo16
 
-      - name: Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner (ui)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_1 }}:latest'
+          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_UI }}:latest'
           format: 'sarif'
-          output: 'trivy-results.sarif'
-      
-      - name: Run Trivy vulnerability scanner
+          output: 'trivy-results-ui.sarif'
+
+      - name: Run Trivy vulnerability scanner (backend)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_2 }}:latest'
+          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_BACKEND }}:latest'
           format: 'sarif'
-          output: 'trivy-results.sarif'
+          output: 'trivy-results-backend.sarif'
 
-      # - name: Run Trivy vulnerability scanner
-      #   uses: aquasecurity/trivy-action@master
-      #   with:
-      #     image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_3 }}:latest'
-      #     format: 'sarif'
-      #     output: 'trivy-results.sarif'
-
-      - name: Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner (odoo)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_4 }}:latest'
+          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_ODOO }}:latest'
           format: 'sarif'
-          output: 'trivy-results.sarif'
-      
-      # - name: Run Trivy vulnerability scanner
-      #   uses: aquasecurity/trivy-action@master
-      #   with:
-      #     image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_5 }}:latest'
-      #     format: 'sarif'
-      #     output: 'trivy-results.sarif'
+          output: 'trivy-results-odoo.sarif'
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'docker.io/library/${{ env.IMAGE_NAME_VALUE_6 }}:latest'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-      
-      # - name: Upload Trivy scan results to GitHub Security tab
-      #   uses: github/codeql-action/upload-sarif@v2
-      #   with:
-      #     sarif_file: 'trivy-results.sarif'
+      - name: Retag and push Docker images to Amazon ECR
+        run: |
+          chmod +x ./push-to-ecr.sh
+          ./push-to-ecr.sh
 
-      - name: Grant execute permission to the script
-        run: chmod +x ./push-to-ecr.sh
-  
-      - name: Retag Docker image and Push Docker Image to Amazon ECR
-        run: ./push-to-ecr.sh
-  
+  # Register a new task definition revision and redeploy the service.
+  # NOTE: iac/ecs.tf is the source of truth for the task definition's
+  # structure; this job only stamps fresh image URIs onto the rendered JSON.
   create_td_revision_restart_ecs:
-    name: Create new task definition revision and Restart ECS
-    needs: 
-       - configure_aws_credentials
-       - deploy_aws_infrastructure 
-       - create_ecr_repository
-       - build_scan_push
-    if: needs.deploy_aws_infrastructure.output.terraform_action != 'destroy'  
+    name: Create new task definition revision and restart ECS
+    needs:
+      - deploy_aws_infrastructure
+      - create_ecr_repository
+      - build_scan_push
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4   
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Render Amazon ECS task definition for first container
+      - name: Render task definition (ui image)
         id: render-ui-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TD }}
           container-name: openems-deployment-container-ui
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_1 }}:latest
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_UI }}:latest
 
-      - name: Modify Amazon ECS task definition with first container
+      - name: Render task definition (backend image)
         id: render-backend-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-ui-container.outputs.task-definition }}
           container-name: openems-deployment-container-backend
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_2 }}:latest
-      
-      # - name: Modify Amazon ECS task definition with second container
-      #   id: render-backend-db-container
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #   with:
-      #     task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:latest
 
-      - name: Modify Amazon ECS task definition with third container
+      - name: Render task definition (odoo image)
         id: render-odoo-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
           container-name: openems-deployment-container-odoo
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest
-
-      # - name: Modify Amazon ECS task definition with forth container
-      #   id: render-odoo-db-container
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #   with:
-      #     task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
-      #     container-name: openems-deployment-container-odoo-db
-      #     image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_4 }}:latest
-      
-      - name: Modify Amazon ECS task definition with fifth container
-        id: render-edge-container
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
-          container-name: openems-deployment-container-edge
-          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_VALUE_6 }}:latest 
+          image: ${{ secrets.ECR_REGISTRY }}/${{ env.IMAGE_NAME_ODOO }}:latest
 
       - name: Deploy to Amazon ECS service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.render-backend-container.outputs.task-definition }}
+          task-definition: ${{ steps.render-odoo-container.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}

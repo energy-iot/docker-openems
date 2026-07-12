@@ -1,21 +1,28 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:470298448112:task-definition/openems-deployment-td:8",
+    "family": "openems-deployment-td",
+    "executionRoleArn": "arn:aws:iam::470298448112:role/openems-deployment-ecs-task-execution-role",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "2048",
+    "memory": "6144",
+    "runtimePlatform": {
+        "operatingSystemFamily": "LINUX",
+        "cpuArchitecture": "X86_64"
+    },
     "containerDefinitions": [
         {
             "name": "openems-deployment-container-ui",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-ui:latest",
-            "cpu": 0,
+            "essential": true,
             "portMappings": [
                 {
-                    "containerPort": 80,
-                    "hostPort": 80,
+                    "containerPort": 8089,
+                    "hostPort": 8089,
                     "protocol": "tcp"
                 }
             ],
-            "essential": true,
-            "environment": [],
-            "mountPoints": [],
-            "volumesFrom": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -23,23 +30,86 @@
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
-            },
-            "systemControls": []
+            }
         },
         {
             "name": "openems-deployment-container-backend",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-backend:latest",
-            "cpu": 0,
+            "essential": true,
+            "environment": [
+                {
+                    "name": "DB_HOST",
+                    "value": "REPLACED_BY_TERRAFORM.rds.amazonaws.com"
+                },
+                {
+                    "name": "DB_NAME",
+                    "value": "openems"
+                },
+                {
+                    "name": "DB_USER",
+                    "value": "odoo"
+                },
+                {
+                    "name": "ODOO_HOST",
+                    "value": "localhost"
+                },
+                {
+                    "name": "ODOO_PORT",
+                    "value": "8069"
+                },
+                {
+                    "name": "INFLUX_URL",
+                    "value": "http://localhost:8086"
+                }
+            ],
+            "secrets": [
+                {
+                    "name": "DB_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:470298448112:secret:openems-deployment-app-credentials:db_password::"
+                },
+                {
+                    "name": "ODOO_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:470298448112:secret:openems-deployment-app-credentials:odoo_password::"
+                }
+            ],
             "portMappings": [
                 {
                     "containerPort": 8075,
                     "hostPort": 8075,
                     "protocol": "tcp"
+                },
+                {
+                    "containerPort": 8079,
+                    "hostPort": 8079,
+                    "protocol": "tcp"
+                },
+                {
+                    "containerPort": 8081,
+                    "hostPort": 8081,
+                    "protocol": "tcp"
+                },
+                {
+                    "containerPort": 8082,
+                    "hostPort": 8082,
+                    "protocol": "tcp"
                 }
             ],
-            "essential": false,
-            "mountPoints": [],
-            "volumesFrom": [],
+            "dependsOn": [
+                {
+                    "containerName": "openems-deployment-container-influxdb",
+                    "condition": "HEALTHY"
+                }
+            ],
+            "healthCheck": {
+                "command": [
+                    "CMD-SHELL",
+                    "curl -s -o /dev/null http://localhost:8075 || exit 1"
+                ],
+                "interval": 30,
+                "timeout": 5,
+                "retries": 3,
+                "startPeriod": 120
+            },
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -47,13 +117,32 @@
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
-            },
-            "systemControls": []
+            }
         },
         {
             "name": "openems-deployment-container-odoo",
             "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo:latest",
-            "cpu": 0,
+            "essential": true,
+            "environment": [
+                {
+                    "name": "HOST",
+                    "value": "REPLACED_BY_TERRAFORM.rds.amazonaws.com"
+                },
+                {
+                    "name": "PORT",
+                    "value": "5432"
+                },
+                {
+                    "name": "USER",
+                    "value": "odoo"
+                }
+            ],
+            "secrets": [
+                {
+                    "name": "PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:470298448112:secret:openems-deployment-app-credentials:db_password::"
+                }
+            ],
             "portMappings": [
                 {
                     "containerPort": 8069,
@@ -61,39 +150,46 @@
                     "protocol": "tcp"
                 }
             ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/openems-deployment-tds",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        },
+        {
+            "name": "openems-deployment-container-influxdb",
+            "image": "influxdb:1.8",
             "essential": true,
-            "command": [
-                "odoo",
-                "-d",
-                "odoodb",
-                "-i",
-                "base",
-                "--db_host=odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com",
-                "--db_port=5432",
-                "--db_user=odoo",
-                "--db_password=Icui4cyou",
-                "--without-demo=all"
-            ],
             "environment": [
                 {
-                    "name": "HOST",
-                    "value": "odoodb.clkigksc2ezs.us-east-1.rds.amazonaws.com"
+                    "name": "INFLUXDB_DB",
+                    "value": "openemsdb"
                 },
                 {
-                    "name": "USER",
-                    "value": "odoo"
-                },
-                {
-                    "name": "PORT",
-                    "value": "5432"
-                },
-                {
-                    "name": "PASSWORD",
-                    "value": "Icui4cyou"
+                    "name": "INFLUXDB_HTTP_AUTH_ENABLED",
+                    "value": "false"
                 }
             ],
-            "mountPoints": [],
-            "volumesFrom": [],
+            "portMappings": [
+                {
+                    "containerPort": 8086,
+                    "hostPort": 8086,
+                    "protocol": "tcp"
+                }
+            ],
+            "healthCheck": {
+                "command": [
+                    "CMD-SHELL",
+                    "influx -execute 'SHOW DATABASES' || exit 1"
+                ],
+                "interval": 10,
+                "timeout": 5,
+                "retries": 5,
+                "startPeriod": 30
+            },
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -101,86 +197,7 @@
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
-            },
-            "systemControls": []
-        },
-        {
-            "name": "openems-deployment-container-edge",
-            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-edge:latest",
-            "cpu": 0,
-            "portMappings": [],
-            "essential": false,
-            "environment": [],
-            "mountPoints": [],
-            "volumesFrom": [],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": "/ecs/openems-deployment-tds",
-                    "awslogs-region": "us-east-1",
-                    "awslogs-stream-prefix": "ecs"
-                }
-            },
-            "systemControls": []
-        }
-    ],
-    "family": "openems-deployment-td",
-    "executionRoleArn": "arn:aws:iam::470298448112:role/openems-deployment-ecs-task-execution-role",
-    "networkMode": "awsvpc",
-    "revision": 8,
-    "volumes": [],
-    "status": "ACTIVE",
-    "requiresAttributes": [
-        {
-            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
-        },
-        {
-            "name": "ecs.capability.execution-role-awslogs"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.ecr-auth"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-        },
-        {
-            "name": "ecs.capability.execution-role-ecr-pull"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
-        },
-        {
-            "name": "ecs.capability.task-eni"
-        }
-    ],
-    "placementConstraints": [],
-    "compatibilities": [
-        "EC2",
-        "FARGATE"
-    ],
-    "requiresCompatibilities": [
-        "FARGATE"
-    ],
-    "cpu": "4096",
-    "memory": "12288",
-    "runtimePlatform": {
-        "cpuArchitecture": "X86_64",
-        "operatingSystemFamily": "LINUX"
-    },
-    "registeredAt": "2024-05-03T20:46:02.998Z",
-    "registeredBy": "arn:aws:iam::470298448112:user/axm-bello",
-    "tags": [
-        {
-            "key": "Project",
-            "value": "openems"
-        },
-        {
-            "key": "Environment",
-            "value": "deployment"
-        },
-        {
-            "key": "Automation",
-            "value": "terraform"
+            }
         }
     ]
 }
