@@ -43,3 +43,21 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = aws_iam_policy.ecs_task_execution_policy.arn
 }
+
+# allow the execution role to resolve the app-credentials secret when
+# injecting container secrets (scoped to that one secret ARN)
+resource "aws_iam_role_policy" "ecs_secrets_access" {
+  name = "${var.project_name}-${var.environment}-ecs-secrets-access"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["secretsmanager:GetSecretValue"]
+        Resource = [aws_secretsmanager_secret.app_credentials.arn]
+      }
+    ]
+  })
+}

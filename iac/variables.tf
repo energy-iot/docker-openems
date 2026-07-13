@@ -72,20 +72,8 @@ variable "image_name_odoo" {
 #   type        = string
 # }
 
-variable "image_name_openems_edge" {
-  description = "the docker image name"
-  type        = string
-}
-
 variable "image_tag" {
   description = "the docker image tag"
-  type        = string
-}
-
-
-# secrets manager variables
-variable "secrets_manager_secret_name" {
-  description = "the secrets manager secret name"
   type        = string
 }
 
@@ -93,41 +81,36 @@ variable "secrets_manager_secret_name" {
 #rds variables
 
 variable "engine_type" {
-    description = "engine type to run for the database"
-    type        = string
+  description = "engine type to run for the database"
+  type        = string
 }
 
 variable "engine_type_version" {
-    description = "engine type version to run for the database"
-    type        = string
+  description = "engine type version to run for the database"
+  type        = string
 }
 
 variable "multi_az_deployment" {
-    description = "multi availabilty zone deployment"
-    type        = bool
+  description = "multi availabilty zone deployment"
+  type        = bool
 }
 
 variable "database_cluster_name" {
-    description = "multi availabilty zone deployment"
-    type        = string
+  description = "multi availabilty zone deployment"
+  type        = string
 }
 
 variable "master_username" {
-    description = "master username of database cluster"
-    type        = string
-}
-
-variable "master_password" {
-    description = "master password of database cluster"
-    type        = string
+  description = "master username of database cluster"
+  type        = string
 }
 
 variable "initial_database_name" {
-    description = "initial database name"
-    type        = string
+  description = "initial database name"
+  type        = string
 }
 
 variable "instance_class_type" {
-    description = "instance type name"
-    type        = string
+  description = "instance type name"
+  type        = string
 }

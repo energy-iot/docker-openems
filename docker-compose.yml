@@ -11,12 +11,19 @@ services:
     build: 
       context: ./openems-backend
     image: openems-backend:latest
+    # These env vars are rendered into the Felix configs by
+    # openems-backend.sh at startup — same contract the ECS task uses
+    # (there they point at RDS/Secrets Manager instead).
     environment:
       DB_HOST: db
       DB_PORT: "5432"
       DB_NAME: openems
       DB_USER: odoo
       DB_PASSWORD: Icui4cyou
+      ODOO_HOST: odoo16
+      ODOO_PORT: "8069"
+      ODOO_PASSWORD: Icui4cyou
+      INFLUX_URL: http://influxdb:8086
     ports:
       - "8075:8075"  # B2B REST API (meter discovery)
       - "8079:8079"

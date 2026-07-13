@@ -9,20 +9,31 @@ resource "aws_db_subnet_group" "database_subnet_group" {
   }
 }
 
-# create the rds instance
+# RDS Postgres — holds the Odoo database only (edge registry, apikeys,
+# users, setup protocols). Telemetry lives in InfluxDB, never here.
+# Odoo creates its application database ("openems") itself during the
+# one-time init (see the PR-A runbook); db_name below is just the initial
+# placeholder database RDS creates.
 resource "aws_db_instance" "database_instance" {
   engine                 = var.engine_type
   engine_version         = var.engine_type_version
   multi_az               = var.multi_az_deployment
   identifier             = var.database_cluster_name
   username               = var.master_username
-  password               = var.master_password
+  password               = random_password.db.result
   db_name                = var.initial_database_name
   instance_class         = var.instance_class_type
   allocated_storage      = 200
+  storage_encrypted      = true
   db_subnet_group_name   = aws_db_subnet_group.database_subnet_group.id
   vpc_security_group_ids = [aws_security_group.database_security_group.id]
   availability_zone      = data.aws_availability_zones.available_zones.names[1]
-  skip_final_snapshot    = true
   publicly_accessible    = false
+
+  # Production data-loss guards: this instance is the system of record for
+  # edge identities and users.
+  deletion_protection       = true
+  backup_retention_period   = 14
+  skip_final_snapshot       = false
+  final_snapshot_identifier = "${var.project_name}-${var.environment}-final-snapshot"
 }

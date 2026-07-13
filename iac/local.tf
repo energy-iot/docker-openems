@@ -1,4 +1,4 @@
-# store the parsed secret value in a local variable for easier reference
 locals {
-  secrets = jsondecode(data.aws_secretsmanager_secret_version.secrets.secret_string)
+  # ECR registry lives in this account/region — no secret indirection needed.
+  ecr_registry = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
 }
