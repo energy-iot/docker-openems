@@ -4,7 +4,9 @@ set -Eeuo pipefail
 HCLOUD_CONTEXT="${HCLOUD_CONTEXT:-openems-pilot}"
 SERVER_NAME="openems-pilot"
 SERVER_TYPE="cx23"
-SERVER_LOCATION="nbg1"
+# EU-only preference order: Nuremberg, Falkenstein, Helsinki.
+SERVER_LOCATIONS=("nbg1" "fsn1" "hel1")
+SERVER_LOCATION=""
 SERVER_IMAGE="ubuntu-24.04"
 SSH_KEY_NAME="openems-deploy"
 FIREWALL_NAME="openems-pilot"
@@ -31,29 +33,31 @@ if hcloud --context "${HCLOUD_CONTEXT}" server describe "${SERVER_NAME}" >/dev/n
 fi
 
 server_type_json="$(hcloud --context "${HCLOUD_CONTEXT}" server-type describe "${SERVER_TYPE}" -o json)"
-available="$(jq -r --arg location "${SERVER_LOCATION}" \
-  '.locations[] | select(.name == $location) | .available' <<<"${server_type_json}")"
+monthly_net=""
+calculated_total=""
+for candidate_location in "${SERVER_LOCATIONS[@]}"; do
+  available="$(jq -r --arg location "${candidate_location}" \
+    '.locations[] | select(.name == $location) | .available' <<<"${server_type_json}")"
+  [[ "${available}" == "true" ]] || continue
 
-if [[ "${available}" != "true" ]]; then
-  echo "UNAVAILABLE: ${SERVER_TYPE} is not currently available in ${SERVER_LOCATION}; no purchase made."
+  candidate_monthly_net="$(jq -er --arg location "${candidate_location}" \
+    '.prices[] | select(.location == $location) | .price_monthly.net' <<<"${server_type_json}")"
+  candidate_total="$(jq -nr --arg server "${candidate_monthly_net}" --arg ipv4 "${EXPECTED_IPV4_MONTHLY_NET}" \
+    '($server | tonumber) + ($ipv4 | tonumber)')"
+
+  if jq -en --arg server "${candidate_monthly_net}" --arg server_cap "${MAX_SERVER_MONTHLY_NET}" \
+    --arg total "${candidate_total}" --arg total_cap "${MAX_TOTAL_MONTHLY_NET}" \
+    '(($server | tonumber) <= ($server_cap | tonumber)) and (($total | tonumber) <= ($total_cap | tonumber))' >/dev/null; then
+    SERVER_LOCATION="${candidate_location}"
+    monthly_net="${candidate_monthly_net}"
+    calculated_total="${candidate_total}"
+    break
+  fi
+done
+
+if [[ -z "${SERVER_LOCATION}" ]]; then
+  echo "UNAVAILABLE: no price-compliant ${SERVER_TYPE} is currently available in EU locations ${SERVER_LOCATIONS[*]}; no purchase made."
   exit 0
-fi
-
-monthly_net="$(jq -er --arg location "${SERVER_LOCATION}" \
-  '.prices[] | select(.location == $location) | .price_monthly.net' <<<"${server_type_json}")"
-
-if ! jq -en --arg actual "${monthly_net}" --arg cap "${MAX_SERVER_MONTHLY_NET}" \
-  '($actual | tonumber) <= ($cap | tonumber)' >/dev/null; then
-  echo "PRICE_GUARD: monthly server price ${monthly_net} exceeds ${MAX_SERVER_MONTHLY_NET}; no purchase made." >&2
-  exit 1
-fi
-
-calculated_total="$(jq -nr --arg server "${monthly_net}" --arg ipv4 "${EXPECTED_IPV4_MONTHLY_NET}" \
-  '($server | tonumber) + ($ipv4 | tonumber)')"
-if ! jq -en --arg actual "${calculated_total}" --arg cap "${MAX_TOTAL_MONTHLY_NET}" \
-  '($actual | tonumber) <= ($cap | tonumber)' >/dev/null; then
-  echo "PRICE_GUARD: calculated monthly total ${calculated_total} exceeds ${MAX_TOTAL_MONTHLY_NET}; no purchase made." >&2
-  exit 1
 fi
 
 [[ -r "${PUBLIC_KEY_FILE}" ]] || {
