@@ -1,0 +1,133 @@
+name: openems-pilot
+
+services:
+  backend:
+    image: ${BACKEND_IMAGE:?Set BACKEND_IMAGE to an immutable GHCR image digest}
+    restart: unless-stopped
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-Africa/Kampala}
+      JAVA_TOOL_OPTIONS: >-
+        -Xms256m -Xmx1280m
+        -XX:+ExitOnOutOfMemoryError
+        -Djava.util.concurrent.ForkJoinPool.common.parallelism=32
+    volumes:
+      - backend-config:/var/opt/openems/config
+      - backend-data:/var/opt/openems/data
+    ports:
+      # Felix is intentionally loopback-only. Access it with an SSH tunnel.
+      - "127.0.0.1:8079:8079"
+    expose:
+      - "8082" # UI WebSocket
+      - "8084" # REST, when configured
+      - "8093" # Edge Manager WebSocket
+    mem_limit: 1536m
+    mem_reservation: 1024m
+    cpus: 1.50
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 8079"]
+      interval: 20s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+    logging: &bounded-logs
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks: [openems]
+
+  ui:
+    image: ${UI_IMAGE:?Set UI_IMAGE to an immutable GHCR image digest}
+    restart: unless-stopped
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-Africa/Kampala}
+      WEBSOCKET_HOST: backend
+      WEBSOCKET_PORT: "8082"
+      REST_PORT: "8084"
+      ENABLE_HTTPS: "false"
+    expose:
+      - "80"
+    mem_limit: 256m
+    mem_reservation: 64m
+    cpus: 0.25
+    depends_on:
+      backend:
+        condition: service_healthy
+    logging: *bounded-logs
+    networks: [openems]
+
+  influxdb:
+    image: influxdb:2.7.12-alpine
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Africa/Kampala}
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME:?Set INFLUXDB_USERNAME}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD:?Set INFLUXDB_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG:-openems.io}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET:-openems}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN:?Set INFLUXDB_TOKEN}
+      INFLUXD_STORAGE_CACHE_MAX_MEMORY_SIZE: "268435456"
+      INFLUXD_STORAGE_CACHE_SNAPSHOT_MEMORY_SIZE: "67108864"
+      INFLUXD_STORAGE_SERIES_ID_SET_CACHE_SIZE: "10485760"
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+    expose:
+      - "8086"
+    mem_limit: 1280m
+    mem_reservation: 512m
+    cpus: 0.75
+    healthcheck:
+      test: ["CMD", "influx", "ping", "--host", "http://localhost:8086"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging: *bounded-logs
+    networks: [openems]
+
+  caddy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    environment:
+      OPENEMS_DOMAIN: ${OPENEMS_DOMAIN:?Set OPENEMS_DOMAIN}
+      EDGE_DOMAIN: ${EDGE_DOMAIN:?Set EDGE_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    mem_limit: 256m
+    mem_reservation: 64m
+    cpus: 0.25
+    depends_on:
+      ui:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://localhost:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    logging: *bounded-logs
+    networks: [openems]
+
+networks:
+  openems:
+    driver: bridge
+
+volumes:
+  backend-config:
+  backend-data:
+  influxdb-data:
+  influxdb-config:
+  caddy-data:
+  caddy-config:
