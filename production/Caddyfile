@@ -1,0 +1,37 @@
+{
+	email {$ACME_EMAIL}
+	admin 0.0.0.0:2019
+}
+
+{$OPENEMS_DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "same-origin"
+		-Server
+	}
+
+	reverse_proxy ui:80
+
+	log {
+		output stdout
+		format console
+	}
+}
+
+# OpenEMS Edge devices connect to the Edge.Manager WebSocket on its own name.
+{$EDGE_DOMAIN} {
+	reverse_proxy backend:8093 {
+		transport http {
+			read_timeout 0
+			write_timeout 0
+		}
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

@@ -10,3 +10,10 @@ iac/.terraform.lock.hcl
 openems-edge/config-edge*/
 docker-compose.override.yml
 __pycache__/
+
+# Hetzner production runtime files and secrets
+production/.env
+production/.current-release
+production/.previous-release
+production/*.log
+production/.secrets/

@@ -1,0 +1,82 @@
+name: Deploy OpenEMS pilot to Hetzner
+
+on:
+  workflow_dispatch:
+    inputs:
+      backend_image:
+        description: Immutable Backend image (ghcr.io/...@sha256:...)
+        required: true
+        type: string
+      ui_image:
+        description: Immutable UI image (ghcr.io/...@sha256:...)
+        required: true
+        type: string
+      create_snapshot:
+        description: Stop services and create a Hetzner snapshot first
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: openems-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate immutable image references
+        env:
+          BACKEND_IMAGE: ${{ inputs.backend_image }}
+          UI_IMAGE: ${{ inputs.ui_image }}
+        run: |
+          [[ "$BACKEND_IMAGE" =~ ^ghcr\.io/.+@sha256:[a-f0-9]{64}$ ]]
+          [[ "$UI_IMAGE" =~ ^ghcr\.io/.+@sha256:[a-f0-9]{64}$ ]]
+      - name: Install SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.HETZNER_SSH_PRIVATE_KEY }}
+          SSH_HOST_KEY: ${{ secrets.HETZNER_SSH_HOST_KEY }}
+        run: |
+          install -m 0700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_HOST_KEY" > ~/.ssh/known_hosts
+      - name: Upload deployment definition
+        env:
+          HOST: ${{ secrets.HETZNER_HOST }}
+          USER: ${{ secrets.HETZNER_USER }}
+        run: rsync -az --delete --exclude=.env --exclude=.current-release --exclude=.previous-release production/ "$USER@$HOST:/opt/openems/"
+      - name: Quiesce stack for snapshot
+        if: inputs.create_snapshot
+        env:
+          HOST: ${{ secrets.HETZNER_HOST }}
+          USER: ${{ secrets.HETZNER_USER }}
+        run: ssh "$USER@$HOST" 'cd /opt/openems && docker compose stop'
+      - uses: hetznercloud/setup-hcloud@v1
+        if: inputs.create_snapshot
+      - name: Create pre-release snapshot
+        if: inputs.create_snapshot
+        env:
+          HCLOUD_TOKEN: ${{ secrets.HETZNER_API_TOKEN }}
+          SERVER: ${{ secrets.HETZNER_SERVER }}
+        run: hcloud server create-image "$SERVER" --type snapshot --description "openems-pre-${GITHUB_RUN_ID}"
+      - name: Restart current stack after snapshot
+        if: always() && inputs.create_snapshot
+        env:
+          HOST: ${{ secrets.HETZNER_HOST }}
+          USER: ${{ secrets.HETZNER_USER }}
+        run: ssh "$USER@$HOST" 'cd /opt/openems && docker compose start'
+      - name: Set release digests and deploy
+        env:
+          HOST: ${{ secrets.HETZNER_HOST }}
+          USER: ${{ secrets.HETZNER_USER }}
+          BACKEND_IMAGE: ${{ inputs.backend_image }}
+          UI_IMAGE: ${{ inputs.ui_image }}
+        run: |
+          printf 'BACKEND_IMAGE=%s\nUI_IMAGE=%s\n' "$BACKEND_IMAGE" "$UI_IMAGE" | \
+            ssh "$USER@$HOST" 'set -eu; umask 077; read -r backend; read -r ui; cd /opt/openems; sed -i "s|^BACKEND_IMAGE=.*|$backend|; s|^UI_IMAGE=.*|$ui|" .env; ./scripts/deploy.sh'
