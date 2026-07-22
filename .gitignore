@@ -22,3 +22,7 @@ production/.current-release
 production/.previous-release
 production/*.log
 production/.secrets/
+
+# OpenEMS jars are fetched at build time (see Dockerfiles), not committed
+openems-backend/openems-backend.jar
+openems-edge/openems.jar
