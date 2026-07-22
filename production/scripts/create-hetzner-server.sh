@@ -92,7 +92,7 @@ created_json="$(hcloud --context "${HCLOUD_CONTEXT}" server create \
   --ssh-key "${SSH_KEY_NAME}" \
   --firewall "${FIREWALL_NAME}" \
   --enable-backup=false \
-  --enable-protection delete \
+  --enable-protection delete,rebuild \
   --label app=openems \
   --label environment=pilot \
   -o json)"
