@@ -51,6 +51,10 @@ the token and remains mode `0600` inside the persistent configuration volume.
 The Backend default Edge Manager port in the current image is `8093`; Caddy
 publishes it as `wss://$EDGE_DOMAIN` on port 443. Register each real Edge with
 the matching Backend metadata/API key rather than retaining demo credentials.
+`Metadata.File` is stored at `/var/opt/openems/data/metadata.json` inside the
+persistent Backend data volume so Edge registrations survive image replacement.
+On a new pilot it initializes `edge0` using the protected
+`OPENEMS_TEST_EDGE_APIKEY` and `OPENEMS_TEST_EDGE_SETUP_PASSWORD` values.
 
 ### Keycloak pilot authentication
 

@@ -19,6 +19,7 @@ for value in \
   BACKEND_IMAGE UI_IMAGE OPENEMS_DOMAIN EDGE_DOMAIN ACME_EMAIL \
   KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD \
   KEYCLOAK_CLIENT_SECRET OPENEMS_ADMIN_PASSWORD \
+  OPENEMS_TEST_EDGE_APIKEY OPENEMS_TEST_EDGE_SETUP_PASSWORD \
   INFLUXDB_USERNAME INFLUXDB_PASSWORD INFLUXDB_TOKEN; do
   if [[ -z "${!value:-}" ]]; then
     echo "Missing required value: $value" >&2
@@ -48,6 +49,8 @@ docker compose exec -T \
   -e INFLUXDB_ORG="${INFLUXDB_ORG:-openems.io}" \
   -e INFLUXDB_BUCKET="${INFLUXDB_BUCKET:-openems}" \
   -e INFLUXDB_TOKEN="$INFLUXDB_TOKEN" \
+  -e OPENEMS_TEST_EDGE_APIKEY="$OPENEMS_TEST_EDGE_APIKEY" \
+  -e OPENEMS_TEST_EDGE_SETUP_PASSWORD="$OPENEMS_TEST_EDGE_SETUP_PASSWORD" \
   -e OPENEMS_DOMAIN="$OPENEMS_DOMAIN" \
   backend sh -eu -c '
     config_dir=/var/opt/openems/config
@@ -114,6 +117,33 @@ EOF
       "$influx_dir" \
       "$influx_dir/openems.config"
     rm -f "$config_dir/Timedata/Dummy.config"
+
+    metadata_file=/var/opt/openems/data/metadata.json
+    if [ ! -s "$metadata_file" ] && [ -s /var/opt/openems/metadata.json ]; then
+      cp /var/opt/openems/metadata.json "$metadata_file"
+    fi
+    if [ ! -s "$metadata_file" ]; then
+      {
+        printf "%s\n" \
+          "{" \
+          "  edges: {" \
+          "    edge0: {" \
+          "      apikey: \"$OPENEMS_TEST_EDGE_APIKEY\"," \
+          "      setuppassword: \"$OPENEMS_TEST_EDGE_SETUP_PASSWORD\"," \
+          "      comment: \"OpenEMS Pilot Test Edge\"" \
+          "    }" \
+          "  }" \
+          "}"
+      } > "$metadata_file"
+    fi
+    mkdir -p "$config_dir/Metadata"
+    {
+      printf "%s\n" \
+        "path=\"$metadata_file\"" \
+        "service.pid=\"Metadata.File\""
+    } > "$config_dir/Metadata/File.config"
+    chmod 600 "$metadata_file" "$config_dir/Metadata/File.config"
+    chown 1000:1000 "$metadata_file" "$config_dir/Metadata/File.config"
   '
 
 # The image imports FileInstall configuration on Backend startup.
