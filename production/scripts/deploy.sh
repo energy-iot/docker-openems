@@ -45,6 +45,9 @@ docker compose up -d --remove-orphans --wait --wait-timeout 360
 # the container so the Keycloak client secret never needs to live in Git.
 docker compose exec -T \
   -e KEYCLOAK_CLIENT_SECRET="$KEYCLOAK_CLIENT_SECRET" \
+  -e INFLUXDB_ORG="${INFLUXDB_ORG:-openems.io}" \
+  -e INFLUXDB_BUCKET="${INFLUXDB_BUCKET:-openems}" \
+  -e INFLUXDB_TOKEN="$INFLUXDB_TOKEN" \
   -e OPENEMS_DOMAIN="$OPENEMS_DOMAIN" \
   backend sh -eu -c '
     config_dir=/var/opt/openems/config
@@ -85,7 +88,42 @@ EOF
       "$config_dir/Authentication.OAuth.config" \
       "$config_dir/Authentication.OAuth.ClientConfig~openems.config" \
       "$oauth_dir/ClientConfig~openems.config"
+
+    influx_dir="$config_dir/Timedata/InfluxDB"
+    mkdir -p "$influx_dir"
+    {
+      printf "%s\n" \
+        "id=\"timedata0\"" \
+        "startDate=\"\"" \
+        "endDate=\"\"" \
+        "queryLanguage=\"FLUX\"" \
+        "url=\"http://influxdb:8086\"" \
+        "org=\"$INFLUXDB_ORG\"" \
+        "apiKey=\"$INFLUXDB_TOKEN\"" \
+        "bucket=\"$INFLUXDB_BUCKET\"" \
+        "measurement=\"data\"" \
+        "isReadOnly=B\"false\"" \
+        "poolSize=I\"5\"" \
+        "maxQueueSize=I\"5000\"" \
+        "service.factoryPid=\"Timedata.InfluxDB\"" \
+        "service.pid=\"Timedata.InfluxDB.openems\""
+    } > "$influx_dir/openems.config"
+    chmod 600 "$influx_dir/openems.config"
+    chown 1000:1000 \
+      "$config_dir/Timedata" \
+      "$influx_dir" \
+      "$influx_dir/openems.config"
+    rm -f "$config_dir/Timedata/Dummy.config"
   '
+
+# The image imports FileInstall configuration on Backend startup.
+docker compose restart backend
+for _ in {1..18}; do
+  if [[ "$(docker inspect --format '{{.State.Health.Status}}' openems-pilot-backend-1)" == "healthy" ]]; then
+    break
+  fi
+  sleep 10
+done
 
 "$SCRIPT_DIR/check.sh"
 

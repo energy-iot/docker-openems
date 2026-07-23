@@ -43,13 +43,10 @@ Open the Felix console only through an SSH tunnel:
 ssh -L 8079:127.0.0.1:8079 openems@SERVER_IP
 ```
 
-Then browse to `http://127.0.0.1:8079/system/console/configMgr`. Replace
-`Timedata.Dummy` with `Timedata.InfluxDB` using:
-
-- URL: `http://influxdb:8086`
-- organization and bucket from `.env`
-- API key from `INFLUXDB_TOKEN`
-- the query language required by the pinned OpenEMS version
+The deployment script replaces `Timedata.Dummy` with `Timedata.InfluxDB`,
+configured for Flux at `http://influxdb:8086` using the protected organization,
+bucket, and API token from `.env`. The generated Backend configuration contains
+the token and remains mode `0600` inside the persistent configuration volume.
 
 The Backend default Edge Manager port in the current image is `8093`; Caddy
 publishes it as `wss://$EDGE_DOMAIN` on port 443. Register each real Edge with
