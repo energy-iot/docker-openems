@@ -68,6 +68,10 @@ initial password in Keycloak after confirming the first OpenEMS login. The
 deployment script also installs the matching OAuth configuration in the
 Backend.
 
+Access tokens are valid for 12 hours because the current OpenEMS backend-mode
+UI does not refresh its Keycloak token. Users must sign in again when that
+period expires. Reduce this lifetime when refresh-token support is added.
+
 Open the Keycloak administration console through a separate SSH tunnel:
 
 ```bash
