@@ -1,6 +1,48 @@
 name: openems-pilot
 
 services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.7.0
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME:?Set KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD:?Set KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD}
+      KC_DB: dev-file
+      KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME: http://keycloak:8080
+      KC_HTTP_ENABLED: "true"
+      JAVA_OPTS_KC_HEAP: >-
+        -XX:InitialRAMPercentage=25
+        -XX:MaxRAMPercentage=60
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:?Set KEYCLOAK_CLIENT_SECRET}
+      OPENEMS_ADMIN_PASSWORD: ${OPENEMS_ADMIN_PASSWORD:?Set OPENEMS_ADMIN_PASSWORD}
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+      - ./keycloak/openems-realm.json:/opt/keycloak/data/import/openems-realm.json:ro
+    ports:
+      # Keycloak is private. Use an SSH tunnel for its administration console.
+      - "127.0.0.1:8080:8080"
+    mem_limit: 768m
+    mem_reservation: 384m
+    cpus: 0.50
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "bash -c \"exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3\"",
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 18
+      start_period: 60s
+    logging: &bounded-logs
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks: [openems]
+
   backend:
     image: ${BACKEND_IMAGE:?Set BACKEND_IMAGE to an immutable GHCR image digest}
     restart: unless-stopped
@@ -31,11 +73,10 @@ services:
       timeout: 5s
       retries: 12
       start_period: 90s
-    logging: &bounded-logs
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    logging: *bounded-logs
     networks: [openems]
 
   ui:
@@ -125,6 +166,7 @@ networks:
     driver: bridge
 
 volumes:
+  keycloak-data:
   backend-config:
   backend-data:
   influxdb-data:

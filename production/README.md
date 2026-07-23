@@ -1,8 +1,8 @@
 # OpenEMS Hetzner 4 GB Pilot
 
-This stack runs OpenEMS Backend, backend-mode UI, InfluxDB 2, and Caddy on one
-2-vCPU/4-GB Ubuntu VM. Images are built in GitHub Actions and the VM only pulls
-immutable digests.
+This stack runs OpenEMS Backend, backend-mode UI, Keycloak, InfluxDB 2, and
+Caddy on one 2-vCPU/4-GB Ubuntu VM. Images are built in GitHub Actions and the
+VM only pulls immutable digests.
 
 ## 1. Prepare GitHub
 
@@ -54,6 +54,29 @@ Then browse to `http://127.0.0.1:8079/system/console/configMgr`. Replace
 The Backend default Edge Manager port in the current image is `8093`; Caddy
 publishes it as `wss://$EDGE_DOMAIN` on port 443. Register each real Edge with
 the matching Backend metadata/API key rather than retaining demo credentials.
+
+### Keycloak pilot authentication
+
+Keycloak is capped at 768 MB and is not exposed publicly. Its persistent
+embedded `dev-file` database is intentionally a single-node pilot compromise;
+move it to a supported external PostgreSQL database before treating this as a
+production identity service.
+
+The first deployment imports the `openems` realm and creates the initial
+`admin` user with the password from `OPENEMS_ADMIN_PASSWORD`. Change this
+initial password in Keycloak after confirming the first OpenEMS login. The
+deployment script also installs the matching OAuth configuration in the
+Backend.
+
+Open the Keycloak administration console through a separate SSH tunnel:
+
+```bash
+ssh -L 8080:127.0.0.1:8080 root@SERVER_IP
+```
+
+Then browse to `http://127.0.0.1:8080/admin/` and use
+`KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME` and
+`KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD` from the server's protected `.env`.
 
 ## 4. Releases, snapshots, and rollback
 

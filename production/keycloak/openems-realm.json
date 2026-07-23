@@ -1,0 +1,45 @@
+{
+  "realm": "openems",
+  "enabled": true,
+  "displayName": "OpenEMS",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "loginWithEmailAllowed": true,
+  "clients": [
+    {
+      "clientId": "openems",
+      "name": "OpenEMS Backend",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${KEYCLOAK_CLIENT_SECRET}",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [
+        "https://openems.nearlyfreeenergy.com/*"
+      ],
+      "webOrigins": [
+        "https://openems.nearlyfreeenergy.com"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@nearlyfreeenergy.com",
+      "firstName": "OpenEMS",
+      "lastName": "Administrator",
+      "enabled": true,
+      "emailVerified": true,
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${OPENEMS_ADMIN_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}
