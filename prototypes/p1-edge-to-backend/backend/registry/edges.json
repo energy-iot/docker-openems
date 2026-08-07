@@ -1,0 +1,25 @@
+{
+  "comment": "OpenEMS backend edge registry (Metadata.File). The backend reads this ONCE at startup and caches it \u2014 restart the backend after editing (register-edge.sh does this for you). Each edge: key = edge-id (its trailing digits become the InfluxDB numeric tag, so they must be globally unique); apikey = the secret the edge presents on connect (unknown apikeys are rejected); comment = free-text metadata (persisted). For the P1 simulator edges the apikey is just the edge-id (not secret); real Pi edges get a random secret from register-edge.sh.",
+  "edges": {
+    "bronx-01": {
+      "apikey": "bronx-01",
+      "comment": "P1 simulator edge (Bronx)"
+    },
+    "bronx-02": {
+      "apikey": "bronx-02",
+      "comment": "P1 simulator edge (Bronx)"
+    },
+    "queens-03": {
+      "apikey": "queens-03",
+      "comment": "P1 simulator edge (Queens)"
+    },
+    "queens-04": {
+      "apikey": "queens-04",
+      "comment": "P1 simulator edge (Queens)"
+    },
+    "slrp4-09": {
+      "apikey": "REDACTED-issue-a-new-key-with-register-edge.sh",
+      "comment": "Synergy Logic SL-RP4 (real Pi) \u2014 apikey redacted for publication; rotate via register-edge.sh --rotate"
+    }
+  }
+}
