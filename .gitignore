@@ -11,6 +11,11 @@ openems-edge/config-edge*/
 docker-compose.override.yml
 __pycache__/
 
+# Editor / OS cruft
+.DS_Store
+**/.DS_Store
+.cursor/
+
 # Hetzner production runtime files and secrets
 production/.env
 production/.current-release
