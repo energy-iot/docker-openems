@@ -23,17 +23,18 @@ resource "aws_db_instance" "database_instance" {
   password               = random_password.db.result
   db_name                = var.initial_database_name
   instance_class         = var.instance_class_type
-  allocated_storage      = 200
+  allocated_storage      = 20 # 20 GB is plenty for the Odoo DB; RDS storage can be grown later but never shrunk
   storage_encrypted      = true
   db_subnet_group_name   = aws_db_subnet_group.database_subnet_group.id
   vpc_security_group_ids = [aws_security_group.database_security_group.id]
   availability_zone      = data.aws_availability_zones.available_zones.names[1]
   publicly_accessible    = false
 
-  # Production data-loss guards: this instance is the system of record for
-  # edge identities and users.
-  deletion_protection       = true
-  backup_retention_period   = 14
-  skip_final_snapshot       = false
-  final_snapshot_identifier = "${var.project_name}-${var.environment}-final-snapshot"
+  # BUILDOUT settings — the DB is empty and gets recreated as we iterate.
+  # RE-HARDEN before production use: deletion_protection = true,
+  # skip_final_snapshot = false (+ final_snapshot_identifier), and raise
+  # backup_retention_period. See the aws-arch-v2 plan.
+  deletion_protection     = false
+  backup_retention_period = 1
+  skip_final_snapshot     = true
 }
