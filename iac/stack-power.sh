@@ -22,9 +22,18 @@ CLUSTER="openems-deployment-cluster"
 SERVICE="openems-deployment-service"
 DB="odoodb"
 REGION="${AWS_DEFAULT_REGION:-us-east-1}"
+ACCOUNT="383166698084" # eiot — this stack's account
 
-aws sts get-caller-identity >/dev/null 2>&1 || {
-  echo "No valid AWS session. Run: aws sso login --profile <profile>" >&2; exit 1; }
+# Default to the eiot deploy profile if the caller didn't set one, so running
+# the script without exporting AWS_PROFILE doesn't silently hit the wrong
+# account (which shows up as a confusing "DBInstance not found").
+export AWS_PROFILE="${AWS_PROFILE:-eiot-openems-devops-383166698084}"
+
+acct=$(aws sts get-caller-identity --query Account --output text 2>/dev/null) || {
+  echo "No valid AWS session. Run: aws sso login --profile $AWS_PROFILE" >&2; exit 1; }
+if [ "$acct" != "$ACCOUNT" ]; then
+  echo "Wrong AWS account: got $acct, expected $ACCOUNT (eiot). Check AWS_PROFILE." >&2; exit 1
+fi
 
 ecs_scale() { aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE" \
   --desired-count "$1" --region "$REGION" --query 'service.desiredCount' --output text; }
