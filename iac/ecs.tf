@@ -33,6 +33,7 @@ resource "aws_cloudwatch_log_group" "log_group" {
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family                   = "${var.project_name}-${var.environment}-td"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 2048
@@ -180,8 +181,9 @@ resource "aws_ecs_service" "ecs_service" {
   launch_type      = "FARGATE"
   cluster          = aws_ecs_cluster.ecs_cluster.id
   task_definition  = aws_ecs_task_definition.ecs_task_definition.arn
-  platform_version = "LATEST"
-  desired_count    = 1
+  platform_version       = "LATEST"
+  desired_count          = 1
+  enable_execute_command = true # allow `aws ecs execute-command` (SSM shell into a container)
 
   # The backend is a singleton: edges hold one persistent websocket each and
   # telemetry has a single writer. Deploys must stop the old task before

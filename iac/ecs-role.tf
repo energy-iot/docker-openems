@@ -60,3 +60,30 @@ resource "aws_iam_role_policy" "ecs_secrets_access" {
     ]
   })
 }
+
+# Task role — the identity the RUNNING containers assume (distinct from the
+# execution role, which only pulls images/secrets at startup). Enables ECS
+# Exec: an SSM shell into a container, e.g. to reach private RDS for DB init /
+# edge registration / debugging. Inline policy — deploy role lacks iam:TagPolicy.
+resource "aws_iam_role" "ecs_task_role" {
+  name               = "${var.project_name}-${var.environment}-ecs-task-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+}
+
+resource "aws_iam_role_policy" "ecs_exec" {
+  name = "${var.project_name}-${var.environment}-ecs-exec"
+  role = aws_iam_role.ecs_task_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:CreateDataChannel",
+        "ssmmessages:OpenControlChannel",
+        "ssmmessages:OpenDataChannel"
+      ]
+      Resource = "*"
+    }]
+  })
+}
