@@ -30,3 +30,12 @@ database_cluster_name = "odoodb"
 master_username       = "odoo"
 initial_database_name = "odoodb"
 instance_class_type   = "db.t3.micro"
+
+# ingress (PR-C) — see iac/alb.tf and iac/dns.tf
+# Phase 1: apply with enable_tls=false -> stands up ALB + Route53 zone (HTTP).
+#          Read `terraform output route53_name_servers`, add them as an NS
+#          record for host "openems" in GoDaddy's eiot.energy DNS.
+# Phase 2: once `dig NS openems.eiot.energy @8.8.8.8` returns the AWS servers,
+#          set enable_tls=true and apply -> ACM cert + HTTPS/wss listeners.
+domain_name = "openems.eiot.energy"
+enable_tls  = true

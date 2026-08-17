@@ -14,7 +14,7 @@ COPY openems-backend.sh ./
 RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common curl gnupg ca-certificates
 
 # Download the pinned release jar and verify its checksum before use.
-RUN curl -fSL "https://github.com/OpenEMS/openems/releases/download/${OPENEMS_BACKEND_VERSION}/openems-backend.jar" -o openems-backend.jar \
+RUN curl -fSL --retry 3 --retry-delay 2 --retry-connrefused "https://github.com/OpenEMS/openems/releases/download/${OPENEMS_BACKEND_VERSION}/openems-backend.jar" -o openems-backend.jar \
  && echo "${OPENEMS_BACKEND_SHA256}  openems-backend.jar" | sha256sum -c -
 
 RUN apt-get install -y openjdk-21-jdk

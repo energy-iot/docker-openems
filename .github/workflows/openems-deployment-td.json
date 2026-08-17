@@ -9,7 +9,7 @@
     "memory": "6144",
     "runtimePlatform": {
         "operatingSystemFamily": "LINUX",
-        "cpuArchitecture": "X86_64"
+        "cpuArchitecture": "ARM64"
     },
     "containerDefinitions": [
         {

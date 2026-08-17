@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certifi
  && rm -rf /var/lib/apt/lists/*
 
 # Download the pinned release jar and verify its checksum before use.
-RUN curl -fSL "https://github.com/OpenEMS/openems/releases/download/${OPENEMS_EDGE_VERSION}/openems-edge.jar" -o /usr/lib/openems/openems.jar \
+RUN curl -fSL --retry 3 --retry-delay 2 --retry-connrefused "https://github.com/OpenEMS/openems/releases/download/${OPENEMS_EDGE_VERSION}/openems-edge.jar" -o /usr/lib/openems/openems.jar \
  && echo "${OPENEMS_EDGE_SHA256}  /usr/lib/openems/openems.jar" | sha256sum -c -
 
 RUN mkdir /etc/openems.d
