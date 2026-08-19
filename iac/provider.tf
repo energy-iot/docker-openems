@@ -10,3 +10,11 @@ provider "aws" {
     }
   }
 }
+
+# Same provider, but WITHOUT default_tags. Used for ACM certificates: our SSO
+# deploy role lacks acm:AddTagsToCertificate, so any tag on the cert (even a
+# default one) makes RequestCertificate fail. This alias sidesteps that.
+provider "aws" {
+  alias  = "untagged"
+  region = var.region
+}

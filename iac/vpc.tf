@@ -72,7 +72,11 @@ resource "aws_route_table_association" "public_subnet_2_rt_association" {
 }
 
 
-# create private data subnet az1
+# Private data subnets (2 AZs — RDS requires a subnet group spanning two).
+# Intentionally NO NAT gateway / route table: the only thing here is RDS,
+# which needs no outbound internet. With no explicit route-table association
+# these subnets fall back to the VPC's local-only main route table, so they
+# stay private. (A NAT gateway would add ~$32/mo for zero benefit.)
 resource "aws_subnet" "private_data_subnet_az1" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = var.private_data_subnet_az1_cidr

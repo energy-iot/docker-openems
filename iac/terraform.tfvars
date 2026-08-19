@@ -11,7 +11,9 @@ private_data_subnet_az1_cidr = "10.0.2.0/24"
 private_data_subnet_az2_cidr = "10.0.3.0/24"
 
 # ecs variables — edges are NOT deployed to AWS (they run in the field)
-architecture               = "X86_64"
+# ARM64/Graviton: matches locally-built (Apple Silicon) images and is ~20%
+# cheaper. If image builds move to x86 CI runners, switch back to X86_64.
+architecture               = "ARM64"
 image_name_openems_ui      = "openems-ui"
 image_name_openems_backend = "openems-backend"
 image_name_odoo            = "odoo"
@@ -28,3 +30,12 @@ database_cluster_name = "odoodb"
 master_username       = "odoo"
 initial_database_name = "odoodb"
 instance_class_type   = "db.t3.micro"
+
+# ingress (PR-C) — see iac/alb.tf and iac/dns.tf
+# Phase 1: apply with enable_tls=false -> stands up ALB + Route53 zone (HTTP).
+#          Read `terraform output route53_name_servers`, add them as an NS
+#          record for host "openems" in GoDaddy's eiot.energy DNS.
+# Phase 2: once `dig NS openems.eiot.energy @8.8.8.8` returns the AWS servers,
+#          set enable_tls=true and apply -> ACM cert + HTTPS/wss listeners.
+domain_name = "openems.eiot.energy"
+enable_tls  = true

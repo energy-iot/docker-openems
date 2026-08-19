@@ -10,7 +10,8 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-# create iam policy document
+# permissions the execution role needs to START a task: pull images from ECR
+# and write container logs.
 data "aws_iam_policy_document" "ecs_task_execution_policy_document" {
   statement {
     actions = [
@@ -26,22 +27,20 @@ data "aws_iam_policy_document" "ecs_task_execution_policy_document" {
   }
 }
 
-# create iam policy
-resource "aws_iam_policy" "ecs_task_execution_policy" {
-  name   = "${var.project_name}-${var.environment}-ecs-task-execution-role-policy"
-  policy = data.aws_iam_policy_document.ecs_task_execution_policy_document.json
-}
-
-# create an iam role
+# create the ECS task execution role
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "${var.project_name}-${var.environment}-ecs-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
-# attach ecs task execution policy to the iam role
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = aws_iam_policy.ecs_task_execution_policy.arn
+# Attach the ECR/logs permissions as an INLINE policy (not a standalone managed
+# aws_iam_policy). Inline policies are created with iam:PutRolePolicy, which the
+# deploy role has; a managed policy would additionally require iam:TagPolicy
+# (Terraform tags everything via default_tags), which the deploy role lacks.
+resource "aws_iam_role_policy" "ecs_task_execution" {
+  name   = "${var.project_name}-${var.environment}-ecs-task-execution"
+  role   = aws_iam_role.ecs_task_execution_role.id
+  policy = data.aws_iam_policy_document.ecs_task_execution_policy_document.json
 }
 
 # allow the execution role to resolve the app-credentials secret when
@@ -59,5 +58,32 @@ resource "aws_iam_role_policy" "ecs_secrets_access" {
         Resource = [aws_secretsmanager_secret.app_credentials.arn]
       }
     ]
+  })
+}
+
+# Task role — the identity the RUNNING containers assume (distinct from the
+# execution role, which only pulls images/secrets at startup). Enables ECS
+# Exec: an SSM shell into a container, e.g. to reach private RDS for DB init /
+# edge registration / debugging. Inline policy — deploy role lacks iam:TagPolicy.
+resource "aws_iam_role" "ecs_task_role" {
+  name               = "${var.project_name}-${var.environment}-ecs-task-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+}
+
+resource "aws_iam_role_policy" "ecs_exec" {
+  name = "${var.project_name}-${var.environment}-ecs-exec"
+  role = aws_iam_role.ecs_task_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:CreateDataChannel",
+        "ssmmessages:OpenControlChannel",
+        "ssmmessages:OpenDataChannel"
+      ]
+      Resource = "*"
+    }]
   })
 }

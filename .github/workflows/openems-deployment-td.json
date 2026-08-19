@@ -1,6 +1,6 @@
 {
     "family": "openems-deployment-td",
-    "executionRoleArn": "arn:aws:iam::470298448112:role/openems-deployment-ecs-task-execution-role",
+    "executionRoleArn": "arn:aws:iam::383166698084:role/openems-deployment-ecs-task-execution-role",
     "networkMode": "awsvpc",
     "requiresCompatibilities": [
         "FARGATE"
@@ -9,12 +9,12 @@
     "memory": "6144",
     "runtimePlatform": {
         "operatingSystemFamily": "LINUX",
-        "cpuArchitecture": "X86_64"
+        "cpuArchitecture": "ARM64"
     },
     "containerDefinitions": [
         {
             "name": "openems-deployment-container-ui",
-            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-ui:latest",
+            "image": "383166698084.dkr.ecr.us-east-1.amazonaws.com/openems-ui:latest",
             "essential": true,
             "portMappings": [
                 {
@@ -34,7 +34,7 @@
         },
         {
             "name": "openems-deployment-container-backend",
-            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/openems-backend:latest",
+            "image": "383166698084.dkr.ecr.us-east-1.amazonaws.com/openems-backend:latest",
             "essential": true,
             "environment": [
                 {
@@ -65,11 +65,11 @@
             "secrets": [
                 {
                     "name": "DB_PASSWORD",
-                    "valueFrom": "arn:aws:secretsmanager:us-east-1:470298448112:secret:openems-deployment-app-credentials:db_password::"
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:383166698084:secret:openems-deployment-app-credentials:db_password::"
                 },
                 {
                     "name": "ODOO_PASSWORD",
-                    "valueFrom": "arn:aws:secretsmanager:us-east-1:470298448112:secret:openems-deployment-app-credentials:odoo_password::"
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:383166698084:secret:openems-deployment-app-credentials:odoo_password::"
                 }
             ],
             "portMappings": [
@@ -121,7 +121,7 @@
         },
         {
             "name": "openems-deployment-container-odoo",
-            "image": "470298448112.dkr.ecr.us-east-1.amazonaws.com/odoo:latest",
+            "image": "383166698084.dkr.ecr.us-east-1.amazonaws.com/odoo:latest",
             "essential": true,
             "environment": [
                 {
@@ -140,7 +140,7 @@
             "secrets": [
                 {
                     "name": "PASSWORD",
-                    "valueFrom": "arn:aws:secretsmanager:us-east-1:470298448112:secret:openems-deployment-app-credentials:db_password::"
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:383166698084:secret:openems-deployment-app-credentials:db_password::"
                 }
             ],
             "portMappings": [

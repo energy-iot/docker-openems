@@ -33,6 +33,7 @@ resource "aws_cloudwatch_log_group" "log_group" {
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family                   = "${var.project_name}-${var.environment}-td"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 2048
@@ -176,12 +177,13 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
 # create ecs service
 resource "aws_ecs_service" "ecs_service" {
-  name             = "${var.project_name}-${var.environment}-service"
-  launch_type      = "FARGATE"
-  cluster          = aws_ecs_cluster.ecs_cluster.id
-  task_definition  = aws_ecs_task_definition.ecs_task_definition.arn
-  platform_version = "LATEST"
-  desired_count    = 1
+  name                   = "${var.project_name}-${var.environment}-service"
+  launch_type            = "FARGATE"
+  cluster                = aws_ecs_cluster.ecs_cluster.id
+  task_definition        = aws_ecs_task_definition.ecs_task_definition.arn
+  platform_version       = "LATEST"
+  desired_count          = 1
+  enable_execute_command = true # allow `aws ecs execute-command` (SSM shell into a container)
 
   # The backend is a singleton: edges hold one persistent websocket each and
   # telemetry has a single writer. Deploys must stop the old task before
@@ -193,10 +195,53 @@ resource "aws_ecs_service" "ecs_service" {
   enable_ecs_managed_tags = false
   propagate_tags          = "SERVICE"
 
-  # vpc and security groups
+  # Give the backend time to boot before the ALB starts failing health checks.
+  health_check_grace_period_seconds = 300
+
+  # vpc and security groups.
+  # Still in the public subnets with a public IP (needed to pull ECR/Secrets
+  # over the IGW — there is no NAT). Ingress is now closed to everything but
+  # the ALB SG, so the public IP is not directly reachable on the app ports.
   network_configuration {
     subnets          = [aws_subnet.public_subnet_az1.id, aws_subnet.public_subnet_az2.id]
     security_groups  = [aws_security_group.openems_security_group.id]
     assign_public_ip = true
   }
+
+  # Register the task's container ports with the ALB target groups.
+  load_balancer {
+    target_group_arn = aws_lb_target_group.ui.arn
+    container_name   = "${var.project_name}-${var.environment}-container-ui"
+    container_port   = 8089
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.uiws.arn
+    container_name   = "${var.project_name}-${var.environment}-container-backend"
+    container_port   = 8082
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.edgews.arn
+    container_name   = "${var.project_name}-${var.environment}-container-backend"
+    container_port   = 8081
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.b2b.arn
+    container_name   = "${var.project_name}-${var.environment}-container-backend"
+    container_port   = 8075
+  }
+
+  # Ensure a listener/rule attaches each target group to the ALB before ECS
+  # tries to register targets into it.
+  depends_on = [
+    aws_lb_listener.http_ui,
+    aws_lb_listener.http_uiws,
+    aws_lb_listener.http_edgews,
+    aws_lb_listener.https_ui,
+    aws_lb_listener.https_uiws,
+    aws_lb_listener_rule.edge_ws,
+    aws_lb_listener_rule.b2b,
+  ]
 }
