@@ -1,4 +1,5 @@
 # Overview
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/energy-iot/docker-openems/badge)](https://scorecard.dev/viewer/?uri=github.com/energy-iot/docker-openems)
 
 This repository contains Docker configuration files and infrastructure as code (IAC) for deploying the OpenEMS backend on AWS. It is structured into several directories, each serving a specific purpose in the deployment process. Below is a brief description of each directory, its contents, and guidance on how to update configurations and obtain further information.
 
