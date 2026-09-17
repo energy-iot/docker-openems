@@ -1,0 +1,9 @@
+{
+	edges: {
+		p5edge-01: {
+			apikey: "p5edge-01",
+			setuppassword: "p5edge-01-setup",
+			comment: "P5 two-tier test edge"
+		}
+	}
+}

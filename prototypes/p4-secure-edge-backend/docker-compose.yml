@@ -1,0 +1,24 @@
+# P4 — TLS-terminating reverse proxy in front of the P1 backend.
+# Additive: it joins the existing backend's Docker network and exposes a
+# wss:// + mTLS endpoint on :8443 that forwards to openems-backend:8081.
+#
+#   ./make-certs.sh 10.0.0.188 <edge-id>   # generate certs first
+#   docker compose up -d                    # start the proxy
+services:
+  tls-proxy:
+    image: nginx:alpine
+    container_name: openems-tls-proxy
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    ports:
+      - "8443:8443"   # edges connect to wss://<laptop-ip>:8443
+    networks:
+      - backend
+    restart: unless-stopped
+
+networks:
+  # the network created by the P1 backend stack (docker compose project name)
+  backend:
+    external: true
+    name: p1-edge-to-backend_default
