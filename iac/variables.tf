@@ -114,3 +114,18 @@ variable "instance_class_type" {
   description = "instance type name"
   type        = string
 }
+
+
+# ingress (PR-C: ALB + Route53 + ACM)
+
+variable "domain_name" {
+  description = "Public hostname for the ALB (e.g. openems.eiot.energy). Empty string = no DNS/ACM; test over the ALB's default *.elb.amazonaws.com name."
+  type        = string
+  default     = ""
+}
+
+variable "enable_tls" {
+  description = "Turn on ACM cert + HTTPS/wss listeners. Set true only AFTER the openems.eiot.energy NS delegation is live at GoDaddy (ACM DNS validation needs it resolving publicly)."
+  type        = bool
+  default     = false
+}

@@ -3,7 +3,7 @@
 # ECR_URI can be overridden via the environment (CI passes the registry).
 set -euo pipefail
 
-ECR_URI="${ECR_URI:-470298448112.dkr.ecr.us-east-1.amazonaws.com}"
+ECR_URI="${ECR_URI:-383166698084.dkr.ecr.us-east-1.amazonaws.com}"
 
 # Explicit list — do NOT derive this from docker-compose.yml: the compose
 # file also references images we never push (influxdb, the local edge).
