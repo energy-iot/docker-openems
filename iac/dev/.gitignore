@@ -1,0 +1,7 @@
+terraform.tfvars
+backend.tfvars
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+lambda/proxy.zip

@@ -1,0 +1,10 @@
+# Copy to backend.tfvars and fill in values from your cloud admin.
+# backend.tfvars is gitignored — do not commit.
+#
+# Usage: terraform init -backend-config=backend.tfvars
+
+bucket         = ""   # S3 bucket for Terraform state
+key            = "iac/dev/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = ""   # DynamoDB table for state locking
+encrypt        = true
